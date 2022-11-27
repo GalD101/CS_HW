@@ -31,6 +31,44 @@ int countDigit(int number, int digit, int occurrences) {
     return countDigit(number / 10, digit, occurrences);
 }
 
+
+int gcd(int a, int b) {
+    int min = 0, max = 0;
+    if (a == 0) {
+        printf("GCD = %d\n", b);
+        return b;
+    }
+    if (b == 0) {
+        printf("GCD = %d\n", a);
+        return a;
+    }
+    if (a > b) {
+        max = a;
+        min = b;
+    }
+    else {
+        max = b;
+        min = a;
+    }
+    int num = 0;
+    int copyMax = max, copyMin = min;
+    while (max - min >= 0) {
+        max -= min;
+        ++num;
+
+    }
+    printf("%d*%d + %d = %d (num1=%d, num2=%d)\n", min, num, copyMax - min*num, min*num + (copyMax - min*num), min*num + (copyMax - min*num), min);
+    gcd(min, copyMax - min*num);
+
+}
+
+//int gcd2(int num1, int num2) {
+//    if (num1 == 0) {
+//        return num2;
+//    }
+//    return gcd2(num2%num1, num1);
+//}
+
 int handleChoice(int choice) {
     switch (choice) {
         case 1:
@@ -42,17 +80,51 @@ int handleChoice(int choice) {
             char fArg = -1, sArg = -1;
             int isNot = 0;
             int index = 0;
+            int isStatementDone = 0;
+            char relationOperator;
             while (ch != '\n') {
                 ch = getchar();
                 switch (ch) {
                     case '(':
+                        isStatementDone = 0;
+                        break;
                     case ')':
-                        continue;
+                        isStatementDone = 1;
+                        break;
                     case '~':
                         isNot = !isNot;
                         break;
                     default:
                         break;
+                }
+                if (isStatementDone && ((ch == '&') || (ch == '|') || (ch == '^'))) {
+                    isStatementDone = 0;
+                    relationOperator = ch;
+                    switch (operation) {
+                        case '>':
+                            isTrue = (fArg > sArg) ? !isNot: isNot;
+                            break;
+                        case '<':
+                            isTrue = (fArg < sArg) ? !isNot: isNot;
+                            break;
+                        case '=':
+                            if (fArg == sArg) {
+                                isTrue = !isNot;
+                            }
+                            else if (fArg < sArg) {
+                                isTrue = (fArg + ('a' - 'A') == sArg) ? !isNot: isNot;
+                            }
+                            else if (fArg > sArg) {
+                                isTrue = (fArg == sArg + ('a' - 'A')) ? !isNot: isNot;
+                            }
+                            else {
+                                isTrue = !isNot;
+                            }
+                            break;
+                        default:
+                            isTrue = 0;
+                            break;
+                    }
                 }
                 if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
                     if (fArg == -1) {
@@ -62,6 +134,9 @@ int handleChoice(int choice) {
                     if (sArg == -1) {
                         sArg = ch;
                     }
+                }
+                else if ((ch >= '0' && ch <= '9')) {
+                    ch = ch - '0';
                 }
                 else if (ch == '>' || ch == '<' || ch == '=') {
                     operation = ch;
@@ -121,9 +196,24 @@ int handleChoice(int choice) {
                 printf("Invalid input!\n");
                 break;
             }
-            printf("The digit %d appears %d times in the number %d\n", (digit, number, countDigit(number, digit, 0)));
+            int copyNumber = number, copyDigit = digit;
+            int occurrences = countDigit(copyNumber, copyDigit, 0);
+            printf("The digit %d appears %d times in the number %d\n", digit, occurrences, number);
             break;
         case 3:
+            printf("Enter two positive numbers: ");
+            int num1, num2;
+            scanf("%d %d", &num1, &num2);
+            if (num1 > num2) {
+                gcd(num1, num2);
+//                int m = gcd2(num1, num2);
+//                printf("%d\n", m);
+            }
+            else {
+                gcd(num2, num1);
+//                int n = gcd2(num2, num1);
+//                printf("%d\n", n);
+            }
             break;
         case 4:
             printf("So Long, and Thanks for All the Fish!\n");
