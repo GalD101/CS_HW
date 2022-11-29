@@ -69,123 +69,204 @@ int gcd(int a, int b) {
 //    return gcd2(num2%num1, num1);
 //}
 
+void printSyntaxError() {
+    printf("You have a syntax error in your statement\n");
+}
+
+int isDigit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
+int isAlpha(char c) {
+    return (c >='a' && c <='z') || (c >='A' && c<= 'Z');
+}
+
+int isValidVar(char c) {
+    return isAlpha(c) || isDigit(c);
+}
+
+int isValidRelationOperator(char c) {
+    return (c == '&') || (c == '|') || (c == '^');
+}
+
+int isValidMathOperator(char c) {
+    return (c == '=') || (c == '>') || (c == '<');
+}
+
+int parseStatement(char var1, char var2, char op, int isNot) {
+    switch (op) {
+        case '=':
+            if (var1 == var2) {
+                return !isNot;
+            } else if (var1 < var2) {
+                return (var1 + ('a' - 'A') == var2) ? !isNot : isNot;
+            } else if (var1 > var2) {
+                return (var1 == var2 + ('a' - 'A')) ? !isNot : isNot;
+            } else {
+                return !isNot;
+            }
+            //break; // useless break because of return
+        case '>':
+            return (var1 > var2) ? !isNot : isNot;
+        case '<':
+            return (var1 < var2) ? !isNot : isNot;
+        default:
+            return 0;
+            //break;
+    }
+}
+
 int handleChoice(int choice) {
     switch (choice) {
         case 1: {
-            printf("Please write your logical statement: ");
+            printf("\nPlease write your logical statement: ");
             char ch = 0;
             scanf(" %c", &ch);
-//            char tmp = getchar();
             int isTrue = 0;
             char operation = 0;
-            char fArg = -1, sArg = -1;
+            char var1 = -1, var2 = -1; // -1 means they are unset
             int isNot = 0;
             int index = 0;
+            int numOfOpeningBraces = 0;
+            int numOfClosingBraces = 0;
             int isStatementDone = 0;
+            int numOfStatementsParsed = 1;
             char relationOperator;
-            while (ch != '\n') {
-                ch = getchar();
-                switch (ch) {
-                    case '(':
-                        isStatementDone = 0;
-                        break;
-                    case ')':
-                        isStatementDone = 1;
-                        break;
-                    case '~':
-                        isNot = !isNot;
-                        break;
-                    default:
-                        break;
-                }
-                if (isStatementDone && ((ch == '&') || (ch == '|') || (ch == '^'))) {
-                    isStatementDone = 0;
-                    relationOperator = ch;
-                    switch (operation) {
-                        case '>':
-                            isTrue = (fArg > sArg) ? !isNot : isNot;
-                            break;
-                        case '<':
-                            isTrue = (fArg < sArg) ? !isNot : isNot;
-                            break;
-                        case '=':
-                            if (fArg == sArg) {
-                                isTrue = !isNot;
-                            } else if (fArg < sArg) {
-                                isTrue = (fArg + ('a' - 'A') == sArg) ? !isNot : isNot;
-                            } else if (fArg > sArg) {
-                                isTrue = (fArg == sArg + ('a' - 'A')) ? !isNot : isNot;
-                            } else {
-                                isTrue = !isNot;
-                            }
-                            break;
-                        default:
-                            isTrue = 0;
-                            break;
+            int statementVal = 0;
+            int isError = 0;
+            while (ch != '\n' && ch != ' ') {
+                if (var1 != -1 && operation != 0 && var2 != -1 && numOfOpeningBraces == numOfClosingBraces) { // var1 is set and operation is set and var2 is set (the latter check is the most important one. after var2 there will be at least 1 ')')
+                    if (isValidRelationOperator(relationOperator)) {
+                        switch (relationOperator) {
+                            case '&':
+                                statementVal = statementVal&&(parseStatement(var1, var2, operation, isNot));
+                                break;
+                            case '|':
+                                statementVal = statementVal||(parseStatement(var1, var2, operation, isNot));
+                                break;
+                            default:
+                                break;
+                        }
                     }
+                    else {
+                        statementVal = parseStatement(var1, var2, operation, isNot); // 1 = true, 0 = false
+                    }
+                    ++numOfStatementsParsed;
+                    var1 = -1;
+                    var2 = -1;
+                    operation = 0;
+                    ch = getchar();
+                    index = 0;
+                    // finito
+                    continue;
                 }
-                if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-                    if (fArg == -1) {
-                        fArg = ch;
+                if (index = 0) { // same as if (numOfOpeningBraces == 0)
+                    if (ch = '(') {
+                        ++numOfOpeningBraces; // numOfOpeningBraces = !numOfOpeningBraces;
+                        ch = getchar();
                         continue;
+                        // next should be var1 or ( or ~
                     }
-                    if (sArg == -1) {
-                        sArg = ch;
+                    else if (ch = '~') {
+                        isNot = !isNot;
+                        ch = getchar();
+                        continue;
+                        // next can be '~' or '('
                     }
-                } else if ((ch >= '0' && ch <= '9')) {
-                    ch = ch - '0';
-                } else if (ch == '>' || ch == '<' || ch == '=') {
-                    operation = ch;
                 }
-                ++index;
-            }
-            switch (operation) {
-                case '>':
-                    isTrue = (fArg > sArg) ? !isNot : isNot;
-                    break;
-                case '<':
-                    isTrue = (fArg < sArg) ? !isNot : isNot;
-                    break;
-                case '=':
-                    if (fArg == sArg) {
-                        isTrue = !isNot;
-                    } else if (fArg < sArg) {
-                        isTrue = (fArg + ('a' - 'A') == sArg) ? !isNot : isNot;
-                    } else if (fArg > sArg) {
-                        isTrue = (fArg == sArg + ('a' - 'A')) ? !isNot : isNot;
-                    } else {
-                        isTrue = !isNot;
+                else { // if (numOfOpeningBraces > 0)
+                    int validVar = isValidVar(ch); // isAlpha(ch) || isDigit(ch)
+                    int openBraces = (ch == '(');
+                    int closeBraces = (ch == ')') && (var2 != -1) && (operation != 0);
+                    int notSign = (ch == '~');
+                    int validMathOp = isValidMathOperator(ch);
+                    int validRelationOp = isValidRelationOperator(ch);
+
+                    if (!validVar && !openBraces && !notSign && !validMathOp && !closeBraces && !validRelationOp) { //todo flip the if and switch with else block todo: go fuck yourself
+                        if (!isError) {
+                            printSyntaxError();
+                        }
+                        isError = 1;
+                        while(ch != '\n') { //clean buffer
+                            ch = getchar();
+                            ++index;
+                        }
+                        break;
+                        // invalid!!!!
                     }
-                    break;
-                default:
-                    isTrue = 0;
-                    break;
+                    else { // ch is VALID!!!
+                        if (validVar) { // ch is variable
+                            // set vars
+                            if (var1 == -1) {
+                                var1 = isDigit(ch) ? ch - '0': ch;
+                                ch = getchar();
+                                ++index;
+                                continue;
+                            }
+                            else if (var2 == -1) {
+                                var2 = isDigit(ch) ? ch - '0': ch;
+                                ch = getchar();
+                                ++index;
+                                continue;
+                                // next should be ')'.
+                            }
+                        }
+                        else if (openBraces) { // ch is '('
+                            ++numOfOpeningBraces;
+                            ch = getchar();
+                            ++index;
+                            continue;
+                        }
+                        else if (notSign) { // ch is '~'
+                            isNot = !isNot;
+                            ch = getchar();
+                            ++index;
+                            continue;
+                        }
+                        else if (validMathOp) {
+                            operation = ch;
+                            ch = getchar();
+                            ++index;
+                            continue;
+                        }
+                        else if (closeBraces) {
+                            ++numOfClosingBraces;
+                            continue;
+                        }
+                        else if (validRelationOp) {
+                            relationOperator = ch;
+                            var1 = -1;
+                            var2 = -1;
+                            index = 0;
+                            ch = getchar();
+                            continue;
+                        }
+                    }
+                }
             }
-            if (isTrue) {
+            if (numOfOpeningBraces != numOfClosingBraces) {
+                if (!isError) {
+                    printSyntaxError();
+                }
+                isError = 1;
+                while(ch != '\n') { //clean buffer
+                    ch = getchar();
+                    ++index;
+                }
+                break;
+            }
+            if (statementVal) {
                 printf("The statement is true.\n");
             } else {
                 printf("The statement is false.\n");
             }
-//            while ((ch = getchar()) != '\n' && ch != EOF) {
-//                printf("%c", ch);\
-
-//            }
-//            fflush(stdin);
-//            inputChar = ge5tchar();
-//            int i = 0;
-//            while ( != '\n') {
-//                fflush(stdin);
-//                scanf("%c", &a);
-//                printf("%c", a);
-//                ++i;
-//            }
             break;
         }
         case 2:
         {
             printf("Enter a number and a digit: ");
             int number = 0, digit = 0;
-            scanf(" %d %d ", &number, &digit);
+            scanf("%d %d", &number, &digit);
             if (digit >= 10 || digit < 0) {
                 printf("Invalid input!\n");
                 break;
