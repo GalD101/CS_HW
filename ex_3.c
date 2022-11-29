@@ -93,6 +93,29 @@ int isValidMathOperator(char c) {
     return (c == '=') || (c == '>') || (c == '<');
 }
 
+int parseStatement(char var1, char var2, char op, int isNot) {
+    switch (op) {
+        case '=':
+            if (var1 == var2) {
+                return !isNot;
+            } else if (var1 < var2) {
+                return (var1 + ('a' - 'A') == var2) ? !isNot : isNot;
+            } else if (var1 > var2) {
+                return (var1 == var2 + ('a' - 'A')) ? !isNot : isNot;
+            } else {
+                return !isNot;
+            }
+            //break; // useless break because of return
+        case '>':
+            return (var1 > var2) ? !isNot : isNot;
+        case '<':
+            return (var1 < var2) ? !isNot : isNot;
+        default:
+            return 0;
+            //break;
+    }
+}
+
 int handleChoice(int choice) {
     switch (choice) {
         case 1: {
@@ -106,6 +129,7 @@ int handleChoice(int choice) {
             int index = 0;
             int numOfOpeningBraces = 0;
             int isStatementDone = 0;
+            int numOfStatementsParsed = 1;
             char relationOperator;
             while (ch != '\n' && ch != ' ') {
                 if (numOfOpeningBraces == 0) { // same as if (numOfOpeningBraces == 0)
@@ -185,10 +209,19 @@ int handleChoice(int choice) {
                         break;
                     }
                 }
-                if (var1 != -1 && operation != 0 && var2 != -1){ // var1 is set and operation is set and var2 is set
-
+                if (var1 != -1 && operation != 0 && var2 != -1){ // var1 is set and operation is set and var2 is set (the latter check is the most important one. after var2 there will be at least 1 ')')
+                    // we expect to see ')'!
+                    if (ch == ')') {
+                        --numOfOpeningBraces;
+                        int statementVal = parseStatement(var1, var2, operation); // 1 = true, 0 = false
+                        // if relationOp:
+                        // statementVal = statementVal <OP> parseStatement(var1, var2, operation);
+                        ++numOfStatementsParsed;
+                        ch = getchar();
+                        ++index;
+                        break;
+                    }
                 }
-
                 if (isStatementDone && ((ch == '&') || (ch == '|') || (ch == '^'))) { // next should be '~' or '('
                     isStatementDone = 0;
                     relationOperator = ch;
