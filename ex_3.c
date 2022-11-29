@@ -251,7 +251,7 @@ int handleChoice(int choice) {
         }
         case 2:
         {
-            printf("Enter a number and a digit: ");
+            printf("\nEnter a number and a digit: ");
             int number = 0, digit = 0;
             scanf("%d %d", &number, &digit);
             if (digit >= 10 || digit < 0 || number < 0) {
