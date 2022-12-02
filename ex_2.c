@@ -189,9 +189,12 @@ int main() {
             case 3:
             {
                 printf("Please enter size: ");
-                unsigned int x = 0;
+                int x = 0;
                 scanf("%d", &x);
-
+                if (x <= 0) {
+                    printf("Invalid input!\n");
+                    break;
+                }
                 printf("#");
                 int ii;
                 for (ii = 0; ii < x; ++ii) {
@@ -444,6 +447,9 @@ int main() {
                 printf("%d => ", decimalNumber);
                 int copyCounter = counter;
                 int i;
+                if (decimalNumber == 0) {
+                    printf("%d", 0);
+                }
                 for (i = 0; i < counter; ++i) {
                     int div = decimalNumber / pow(2, (--copyCounter));
                     int rem = div % 2;
@@ -488,7 +494,7 @@ int main() {
                 printf("Bye!\n");
                 return 0;
             default:
-                printf("Invalid Option!\n");
+                printf("Invalid option!\n");
                 break;
         }
     } // end of while loop
