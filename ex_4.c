@@ -51,16 +51,179 @@ void printSection(int sectionIndex, char section[], int size) {
     }
 }
 
-int determineWinner(char ) {
+// return the char of the winner. return '0' if tie (only possible output is tie, X win or O win)
+char determineRowWinner(char section[][SECTION_SIZE], int size) {
+    char winner = '0';
+    for (int i = 0; i < size; ++i) {
+        char prev = section[i][0];
+        for (int j = 1; j < size; ++j) {
+            char cur = section[i][j];
+            if (cur != prev) {
+                return '0';
+            }
+            else {
+                winner = cur;
+            }
+            prev = cur;
+        }
+    }
+    return winner;
+}
 
+
+// return the char of the winner. return '0' if tie (only possible output is tie, X win or O win)
+char determineColWinner(char section[][SECTION_SIZE], int size) {
+    char winner = '0';
+    for (int i = 0; i < size; ++i) {
+        char prev = section[0][i];
+        for (int j = 1; j < size; ++j) {
+            char cur = section[j][i];
+            if (cur != prev) {
+                return '0';
+            }
+            else {
+                winner = cur;
+            }
+            prev = cur;
+        }
+    }
+    return winner;
+}
+
+// return the char of the winner. return '0' if tie (only possible output is tie, X win or O win)
+char determineDiagWinner(char section[][SECTION_SIZE], int size) {
+    char winner = '0';
+    for (int i = 1; i < size; ++i) {
+        char prev = section[i - 1][i - 1];
+        char cur = section[i][i];
+        if (cur != prev) {
+            return '0';
+        }
+        else {
+            winner = cur;
+        }
+    }
+
+    return winner;
+}
+
+int determineWinner(int size,
+                    char section0[][SECTION_SIZE],
+                    char section1[][SECTION_SIZE],
+                    char section2[][SECTION_SIZE],
+                    char section3[][SECTION_SIZE]) {
+    const char TIE = '0';
+
+    char rowWinner0 = determineRowWinner(section0, size);
+    char rowWinner1 = determineRowWinner(section1, size);
+    char rowWinner2 = determineRowWinner(section2, size);
+    char rowWinner3 = determineRowWinner(section3, size);
+
+    char colWinner0 = determineColWinner(section0, size);
+    char colWinner1 = determineColWinner(section1, size);
+    char colWinner2 = determineColWinner(section2, size);
+    char colWinner3 = determineColWinner(section3, size);
+
+    char diagWinner0 = determineDiagWinner(section0, size);
+    char diagWinner1 = determineDiagWinner(section1, size);
+    char diagWinner2 = determineDiagWinner(section2, size);
+    char diagWinner3 = determineDiagWinner(section3, size);
+
+    switch (rowWinner0) {
+        case 'X':
+        case 'O':
+            return rowWinner0;
+        default:
+            break;
+    }
+    switch (rowWinner1) {
+        case 'X':
+        case 'O':
+            return rowWinner1;
+        default:
+            break;
+    }
+    switch (rowWinner2) {
+        case 'X':
+        case 'O':
+            return rowWinner2;
+        default:
+            break;
+    }
+    switch (rowWinner3) {
+        case 'X':
+        case 'O':
+            return rowWinner3;
+        default:
+            break;
+    }
+
+    switch (colWinner0) {
+        case 'X':
+        case 'O':
+            return colWinner0;
+        default:
+            break;
+    }
+    switch (colWinner1) {
+        case 'X':
+        case 'O':
+            return colWinner1;
+        default:
+            break;
+    }
+    switch (colWinner2) {
+        case 'X':
+        case 'O':
+            return colWinner2;
+        default:
+            break;
+    }
+    switch (colWinner3) {
+        case 'X':
+        case 'O':
+            return colWinner3;
+        default:
+            break;
+    }
+
+    switch (diagWinner0) {
+        case 'X':
+        case 'O':
+            return diagWinner0;
+        default:
+            break;
+    }
+    switch (diagWinner1) {
+        case 'X':
+        case 'O':
+            return diagWinner1;
+        default:
+            break;
+    }
+    switch (diagWinner2) {
+        case 'X':
+        case 'O':
+            return diagWinner2;
+        default:
+            break;
+    }
+    switch (diagWinner3) {
+        case 'X':
+        case 'O':
+            return diagWinner3;
+        default:
+            break;
+    }
+
+    return TIE;
 }
 
 // game() will return 0 if there is a winner or a tie. It will return a 1 if there was an error
 
 int game() {
     const char EMPTY_SPOT = '*';
-    int winner = 0;
-    int isTie  = 0;
+    char winner = 'q';
     char section0 [SECTION_SIZE][SECTION_SIZE];
     char section1 [SECTION_SIZE][SECTION_SIZE];
     char section2 [SECTION_SIZE][SECTION_SIZE];
@@ -77,7 +240,7 @@ int game() {
     while (input == '\n' || input == ' ') {
         input = getchar();
     }
-    while (!winner && !isTie) { //!(winner || isTie)
+    while (winner == 'q') { //!(winner || isTie)
         int chosenSection = 0, chosenRow = 0, chosenColumn = 0;
         while (input != '\n') {
             switch (index % 3) {
@@ -97,8 +260,8 @@ int game() {
                             chosenSection = 3;
                             break;
                         default:
-                            // todo:error
-                            break;
+                            printf("Input incorrect.\n");
+                            return 1;
                     }
                     break;
                 }
@@ -117,8 +280,8 @@ int game() {
                             chosenRow = 3;
                             break;
                         default:
-                            // todo:error
-                            break;
+                            printf("Input incorrect.\n");
+                            return 1;
                     }
                     break;
                 }
@@ -136,6 +299,9 @@ int game() {
                         case '3':
                             chosenColumn = 3;
                             break;
+                        default:
+                            printf("Input incorrect.\n");
+                            return 1;
                     }
 
                     if (chosenSection != -1 && chosenRow != -1 && chosenColumn != -1) { //we have all the info we need!
@@ -145,28 +311,28 @@ int game() {
                                     section0[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect\n"); // todo:error
+                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                             case 1:
                                 if (section1[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section1[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect\n"); // todo:error
+                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                             case 2:
                                 if (section2[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section2[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect\n"); // todo:error
+                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                             case 3:
                                 if (section3[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section3[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect\n"); // todo:error
+                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                         }
                         isXturn = !isXturn;
@@ -174,8 +340,8 @@ int game() {
                     }
                 }
                 default: {
-                    // todo:error
-                    break;
+                    printf("input incorrect.\n");
+                    return 1;
                 }
             }
             do {
@@ -183,6 +349,23 @@ int game() {
             } while (input == ' ');
             ++index;
         }
+
+        winner = determineWinner(SECTION_SIZE, section0, section1, section2, section3);
+        switch (winner) {
+            case 'X':
+                printf("X is the winner.\n");
+                break;
+            case 'O':
+                printf("O is the winner.\n");
+                break;
+            case '0':
+                printf("Tie.\n");
+                break;
+            default:
+                printf("Tie.\n");
+                break;
+        }
+
         printSection(0, section0, SECTION_SIZE);
         printf("\n");
         printSection(1, section1, SECTION_SIZE);
@@ -190,9 +373,6 @@ int game() {
         printSection(2, section2, SECTION_SIZE);
         printf("\n");
         printSection(3, section3, SECTION_SIZE);
-
-        break;
-        determineWinner(section0);
     }
 }
 
