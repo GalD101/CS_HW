@@ -1,17 +1,6 @@
 #include "stdio.h"
 
-//#define EMPTY_SPOT '*'
 #define SECTION_SIZE 4
-
-// TODO: if there is a winner, finish the game and clean buffer using while and getchar()
-
-
-// TODO
-int isValidInput(int x, int y, int z) { // , int board [][]
-    return (x == 0 || x == 1 || x == 2 || x == 3) &&
-           (y == 0 || y == 1 || y == 2 || y == 3) &&
-           (z == 0 || z == 1 || z == 2 || z == 3);
-}
 
 void initSection(char section[][SECTION_SIZE], int size, char initVal) {
     for (int i = 0; i < size; i++) {
@@ -21,18 +10,10 @@ void initSection(char section[][SECTION_SIZE], int size, char initVal) {
     }
 }
 
-enum pos {
-    section = 0,
-    row = 1,
-    column = 2,
-};
-
 void printRow(char row[], int size) {
     for (int i = 0; i < SECTION_SIZE; i++) {
-        setbuf(stdout, 0);
         printf("%c ", row[i]);
     }
-    setbuf(stdout, 0);
     printf("\n");
 }
 
@@ -70,7 +51,6 @@ char determineRowWinner(char section[][SECTION_SIZE], int size) {
     return winner;
 }
 
-
 // return the char of the winner. return '0' if tie (only possible output is tie, X win or O win)
 char determineColWinner(char section[][SECTION_SIZE], int size) {
     char winner = '0';
@@ -90,6 +70,7 @@ char determineColWinner(char section[][SECTION_SIZE], int size) {
     return winner;
 }
 
+
 // return the char of the winner. return '0' if tie (only possible output is tie, X win or O win)
 char determineDiagWinner(char section[][SECTION_SIZE], int size) {
     char winner = '0';
@@ -106,6 +87,7 @@ char determineDiagWinner(char section[][SECTION_SIZE], int size) {
 
     return winner;
 }
+
 
 int determineWinner(int size,
                     char section0[][SECTION_SIZE],
@@ -128,6 +110,29 @@ int determineWinner(int size,
     char diagWinner1 = determineDiagWinner(section1, size);
     char diagWinner2 = determineDiagWinner(section2, size);
     char diagWinner3 = determineDiagWinner(section3, size);
+
+    if (section0[0][0] == section1[1][1] && section0[0][0] == section2[2][2] && section0[0][0] == section3[3][3]) {
+        if (section0[0][0] == 'X' || section0[0][0] == 'O') {
+            return section0[0][0];
+        }
+    }
+
+//    char multiRowWinner0 = determineMultiRowWinner(section0, size);
+//    char multiRowWinner1 = determineMultiRowWinner(section1, size);
+//    char multiRowWinner2 = determineMultiRowWinner(section2, size);
+//    char multiRowWinner3 = determineMultiRowWinner(section3, size);
+//
+//    char multiColWinner0 = determineMultiColWinner(section0, size);
+//    char multiColWinner1 = determineMultiColWinner(section1, size);
+//    char multiColWinner2 = determineMultiColWinner(section2, size);
+//    char multiColWinner3 = determineMultiColWinner(section3, size);
+//
+//    char multiDiagWinner0 = determineMultiDiagWinner(section0, size);
+//    char multiDiagWinner1 = determineMultiDiagWinner(section1, size);
+//    char multiDiagWinner2 = determineMultiDiagWinner(section2, size);
+//    char multiDiagWinner3 = determineMultiDiagWinner(section3, size);
+
+
 
     switch (rowWinner0) {
         case 'X':
@@ -228,6 +233,11 @@ int game() {
     char section1 [SECTION_SIZE][SECTION_SIZE];
     char section2 [SECTION_SIZE][SECTION_SIZE];
     char section3 [SECTION_SIZE][SECTION_SIZE];
+    enum pos {
+        section = 0,
+        row = 1,
+        column = 2,
+    };
 
     initSection(section0, SECTION_SIZE, EMPTY_SPOT);
     initSection(section1, SECTION_SIZE, EMPTY_SPOT);
@@ -260,7 +270,6 @@ int game() {
                             chosenSection = 3;
                             break;
                         default:
-                            printf("Input incorrect.\n");
                             return 1;
                     }
                     break;
@@ -280,7 +289,6 @@ int game() {
                             chosenRow = 3;
                             break;
                         default:
-                            printf("Input incorrect.\n");
                             return 1;
                     }
                     break;
@@ -300,7 +308,6 @@ int game() {
                             chosenColumn = 3;
                             break;
                         default:
-                            printf("Input incorrect.\n");
                             return 1;
                     }
 
@@ -311,28 +318,25 @@ int game() {
                                     section0[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect.\n"); // todo:error
+
                                 return 1;
                             case 1:
                                 if (section1[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section1[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                             case 2:
                                 if (section2[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section2[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                             case 3:
                                 if (section3[chosenRow][chosenColumn] == EMPTY_SPOT) {
                                     section3[chosenRow][chosenColumn] = isXturn ? 'X':'O';
                                     break;
                                 }
-                                printf("input incorrect.\n"); // todo:error
                                 return 1;
                         }
                         isXturn = !isXturn;
@@ -340,12 +344,17 @@ int game() {
                     }
                 }
                 default: {
-                    printf("input incorrect.\n");
                     return 1;
                 }
             }
+
+            int isSpace = 0;
             do {
                 input = getchar();
+                if (input != ' ' && input != '\n' && !isSpace) {
+                    return 1;
+                }
+                isSpace = 1;
             } while (input == ' ');
             ++index;
         }
@@ -374,6 +383,8 @@ int game() {
         printf("\n");
         printSection(3, section3, SECTION_SIZE);
     }
+
+    return 0;
 }
 
 
@@ -383,24 +394,21 @@ int main () {
         char choice;
         scanf("%c", &choice);
         switch (choice) {
+            case 'Y':
             case 'y':
                 printf("Please enter your game sequence.\n");
-                if (!game()) {
-                    printf("YEET\n");
-                    return 0;
+                if (game()) {
+                    printf("input incorrect.\n");
                 }
-                else {
-                    printf("Would you like to continue? (y/n)\n");
-                    break;
-                }
-                break;
+
+                printf("Would you like to continue? (y/n)\n");
+                continue;
+            case 'N':
             case 'n':
                 printf("YEET\n");
                 return 0;
             default:
-//                printf("Would you like to continue? (y/n)\n");
                 break;
         }
-    }
-    return 0;
+    } // end of while loop
 }
