@@ -10,7 +10,8 @@
 * function name: printMenu *
 * The Input:  *
 * The output: the menu with all the available options *
-* The Function operation: prints a menu with the options #'s and description *
+* The Function operation: prints a menu
+ * with the options #'s and description *
 *************************************************************************/
 void printMenu() {
     printf("Choose an option:\n");
@@ -24,7 +25,8 @@ void printMenu() {
 * function name: countDigit *
 * The Input: int number, int digit, int occurrences *
 * The output: the number of occurrences of the digit in the number *
-* The Function operation: calculates the number of occurrences of digit in number *
+* The Function operation: calculates the number
+ * of occurrences of digit in number *
 *************************************************************************/
 int countDigit(int number, int digit, int occurrences) {
     if (number == 0) {
@@ -40,7 +42,8 @@ int countDigit(int number, int digit, int occurrences) {
 * function name: gcd *
 * The Input: int a, int b *
 * The output: the greatest common divider of numbers a and b *
-* The Function operation: calculates the greatest common divider of the numbers a and b *
+* The Function operation: calculates the greatest common divider
+ * of the numbers a and b *
 *************************************************************************/
 int gcd(int a, int b) {
     int min = 0, max = 0;
@@ -62,13 +65,13 @@ int gcd(int a, int b) {
     }
     int num = 0;
     int copyMax = max;
-    while (max - min >= 0) {
-        max -= min;
+    while (copyMax - min >= 0) {
+        copyMax -= min;
         ++num;
-
     }
-    printf("%d*%d+%d = %d (num1=%d, num2=%d)\n", min, num, copyMax - min*num, min*num + (copyMax - min*num), min*num + (copyMax - min*num), min);
-    gcd(min, copyMax - min*num);
+    printf("%d*%d+%d = %d (num1=%d, num2=%d)\n", min, num,
+           (max - min * num), max, max, min);
+    gcd(min, max - min * num);
 }
 
 /************************************************************************
@@ -95,7 +98,8 @@ int isDigit(char c) {
 * function name: isAlpha *
 * The Input: char c *
 * The output: 1 if c is an alphabetic letter, 0 otherwise *
-* The Function operation: calculates whether or not c is an alphabetic letter *
+* The Function operation: calculates whether or not
+ * c is an alphabetic letter *
 *************************************************************************/
 int isAlpha(char c) {
     return (c >='a' && c <='z') || (c >='A' && c<= 'Z');
@@ -105,7 +109,8 @@ int isAlpha(char c) {
 * function name: isValidVar *
 * The Input: char c *
 * The output: 1 if c is a digit or an alphabetic letter, 0 otherwise *
-* The Function operation: calculates whether or not c is a digit or an alphabetic letter *
+* The Function operation: calculates whether or
+ * not c is a digit or an alphabetic letter *
 *************************************************************************/
 int isValidVar(char c) {
     return isAlpha(c) || isDigit(c);
@@ -132,26 +137,93 @@ int isValidMathOperator(char c) {
 }
 
 /************************************************************************
+* function name: isCaps *
+* The Input: char letter *
+* The output: 1 if c is a capital letter, 0 otherwise *
+* The Function operation: calculates whether or not c is a capital letter *
+*************************************************************************/
+int isCaps(char letter) {
+    return letter >='A' && letter <= 'Z';
+}
+
+/************************************************************************
 * function name: parseStatement *
 * The Input: char var1, char var2, char op, char isNot *
 * The output: 1 if the statement (var1 op var2) is true, 0 otherwise *
-* The Function operation: calculates whether or not the statement is true or false *
+* The Function operation: calculates whether or not
+ * the statement is true or false *
 *************************************************************************/
-int parseStatement(char var1, char var2, char op, int isNot) {
+int parseStatement(int var1, int var2, char op, int isNot, int isVar1Char, int isVar2Char) {
     switch (op) {
         case '=':
             if (var1 == var2) {
                 return !isNot;
-            } else if (var1 < var2) {
-                return (var1 + ('a' - 'A') == var2) ? !isNot : isNot;
-            } else if (var1 > var2) {
-                return (var1 == var2 + ('a' - 'A')) ? !isNot : isNot;
-            } else {
-                return !isNot;
             }
+            else if (var1 < var2) {
+                if (isVar1Char) {
+                    return (var1 + ('a' - 'A') == var2) ? !isNot : isNot;
+                }
+                else if (isVar2Char) {
+                    return (var2 + ('a' - 'A') == var1) ? !isNot : isNot;
+                }
+                return isNot;
+            }
+            else if (var1 > var2) {
+                if (isVar2Char) {
+                    return (var2 + ('a' - 'A') == var1) ? !isNot : isNot;
+                }
+                else if (isVar1Char) {
+                    return (var1 + ('a' - 'A') == var2) ? !isNot : isNot;
+                }
+                return isNot;
+            }
+            break;
         case '>':
+            if (isVar1Char && isVar2Char) {
+                if (isCaps(var1)) {
+                    if (isCaps(var2)) {
+                        // both var1 and var2 are caps
+                        return (var1 > var2) ? !isNot : isNot;
+                    }
+                    else {
+                        // var1 is caps and var2 is small
+                        return (var1 + ('a' - 'A') > var2) ? !isNot : isNot;
+                    }
+                }
+                else {
+                    if (isCaps(var2)) {
+                        // var1 is small and var2 is caps
+                        return (var1 > var2 + ('a' - 'A')) ? !isNot : isNot;
+                    }
+                    else {
+                        // var1 is small and var2 is small
+                        return (var1 > var2) ? !isNot : isNot;
+                    }
+                }
+            }
             return (var1 > var2) ? !isNot : isNot;
         case '<':
+            if (isVar1Char && isVar2Char) {
+                if (isCaps(var1)) {
+                    if (isCaps(var2)) {
+                        return (var1 < var2) ? !isNot : isNot;
+                    }
+                    else {
+                        // var1 is caps and var2 is small
+                        return (var1 + ('a' - 'A') < var2) ? !isNot : isNot;
+                    }
+                }
+                else {
+                    if (isCaps(var2)) {
+                        // var1 is small and var2 is caps
+                        return (var1 < var2 + ('a' - 'A')) ? !isNot : isNot;
+                    }
+                    else {
+                        // var1 is small and var2 is small
+                        return (var1 < var2) ? !isNot : isNot;
+                    }
+                }
+            }
             return (var1 < var2) ? !isNot : isNot;
         default:
             return 0;
@@ -172,11 +244,14 @@ void printPositiveMessage() {
 /************************************************************************
 * function name: printNumOfOccurrences *
 * The Input: int digit, int occurrences, int number *
-* The output: "The digit digit appears occurrences times in the number number" *
-* The Function operation: prints the digit, the number and the number of occurrences to the screen *
+* The output: "The digit digit appears
+ * occurrences times in the number number" *
+* The Function operation: prints the digit, the number
+ * and the number of occurrences to the screen *
 *************************************************************************/
 int printNumOfOccurrences(int digit, int occurrences, int number) {
-    printf("The digit %d appears %d times in the number %d\n", digit, occurrences, number);
+    printf("The digit %d appears %d times in the number %d\n",
+           digit, occurrences, number);
 }
 
 
@@ -190,13 +265,15 @@ int printNumOfOccurrences(int digit, int occurrences, int number) {
 void printDefaultMessage() {
     printf("Fool of a Took!\n"
            "This is a serious journey, not a hobbit walking-party.\n"
-           "Throw yourself in next time, and then you will be no further nuisance.\n");
+           "Throw yourself in next time, "
+           "and then you will be no further nuisance.\n");
 }
 
 /************************************************************************
 * function name: handleChoice *
 * The Input: int choice *
-* The output: executes the corresponding operation with respect to the given choice *
+* The output: executes the corresponding operation
+ * with respect to the given choice *
 * The Function operation: operating according to the choice *
 *************************************************************************/
 int handleChoice(int choice) {
@@ -205,41 +282,47 @@ int handleChoice(int choice) {
             printf("\nPlease write your logical statement: ");
             char ch = 0;
             scanf(" %c", &ch);
+
+            int var1 = -1, var2 = -1;
+            int isVar1Digit = 0, isVar2Digit = 0;
             char operation = 0;
-            char var1 = -1, var2 = -1; // -1 means they are unset
             int isNot = 0;
-            int index = 0;
-            int numOfOpeningBraces = 0;
-            int numOfClosingBraces = 0;
-            int numOfStatementsParsed = 0;
+            int numOfOpeningBraces = 0, numOfClosingBraces = 0;
             char relationOperator;
             int statementVal = 0;
             int isError = 0;
-            while (ch != '\n' && ch != ' ') {
-                if (var1 != -1 && operation != 0 && var2 != -1 && numOfOpeningBraces == numOfClosingBraces) { // var1 is set and operation is set and var2 is set (the latter check is the most important one. after var2 there will be at least 1 ')')
+            while (ch != '\n' && ch != ' ' && ch != EOF) {
+                if (var1 != -1 && operation != 0 && var2 != -1 &&
+                    numOfOpeningBraces == numOfClosingBraces) {
                     if (isValidRelationOperator(relationOperator)) {
                         switch (relationOperator) {
                             case '&':
-                                statementVal = statementVal&&(parseStatement(var1, var2, operation, isNot));
+                                statementVal = statementVal &&
+                                (parseStatement(var1, var2, operation, isNot,
+                                                !isVar1Digit, !isVar2Digit));
                                 break;
                             case '|':
-                                statementVal = statementVal||(parseStatement(var1, var2, operation, isNot));
+                                statementVal = statementVal ||
+                                (parseStatement(var1, var2, operation, isNot,
+                                                !isVar1Digit, !isVar2Digit));
                                 break;
                             default:
                                 break;
                         }
                     }
                     else {
-                        statementVal = parseStatement(var1, var2, operation, isNot);
+                        statementVal = parseStatement
+                                (var1, var2, operation, isNot,
+                                 !isVar1Digit, !isVar2Digit);
                     }
 
                     // Reset vars for new potential statement
-                    ++numOfStatementsParsed;
                     var1 = -1;
                     var2 = -1;
+                    isVar1Digit = 0;
+                    isVar2Digit = 0;
                     operation = 0;
                     ch = getchar();
-                    index = 0;
                     isNot = 0;
                     continue;
                 }
@@ -251,40 +334,75 @@ int handleChoice(int choice) {
                     int validMathOp = isValidMathOperator(ch);
                     int validRelationOp = isValidRelationOperator(ch);
 
-                    if (validVar || openBraces || notSign || validMathOp || closeBraces || validRelationOp) {
+                    if (validVar || openBraces || notSign ||
+                        validMathOp || closeBraces || validRelationOp) {
                         if (validVar) {
 
                             // Set vars
                             if (var1 == -1) {
-                                var1 = isDigit(ch) ? ch - '0': ch;
+                                isVar1Digit = isDigit(ch);
+                                var1 = isVar1Digit ? ch - '0': ch;
                                 ch = getchar();
-                                ++index;
+
+                                // In the case of a letter followed by another letter, print error
+                                if (isAlpha(ch) && isAlpha(var1)) {
+                                    if (!isError) {
+                                        printSyntaxError();
+                                    }
+                                    isError = 1;
+                                    break;
+                                }
+
+                                // in the case of a number bigger or equals to 10
+                                int num = (int)var1;
+                                while (isDigit(ch) && isVar1Digit) {
+                                    num *= 10;
+                                    ch -= '0';
+                                    num += ch;
+                                    ch = getchar();
+                                }
+                                var1 = num;
                                 continue;
                             }
                             else if (var2 == -1) {
-                                var2 = isDigit(ch) ? ch - '0': ch;
+                                isVar2Digit = isDigit(ch);
+                                var2 = isVar2Digit ? ch - '0': ch;
                                 ch = getchar();
-                                ++index;
+
+                                // In the case of a letter followed by another letter, print error
+                                if (isAlpha(ch) && isAlpha(var2)) {
+                                    if (!isError) {
+                                        printSyntaxError();
+                                    }
+                                    isError = 1;
+                                    break;
+                                }
+
+                                // in the case of a number bigger or equals to 10
+                                int num = (int)var2;
+                                while (isDigit(ch) && isVar2Digit) {
+                                    num *= 10;
+                                    ch -= '0';
+                                    num += ch;
+                                    ch = getchar();
+                                }
+                                var2 = num;
                                 continue;
-                                // next should be ')'.
                             }
                         }
-                        else if (openBraces) { // ch is '('
+                        else if (openBraces) {
                             ++numOfOpeningBraces;
                             ch = getchar();
-                            ++index;
                             continue;
                         }
-                        else if (notSign) { // ch is '~'
+                        else if (notSign) {
                             isNot = !isNot;
                             ch = getchar();
-                            ++index;
                             continue;
                         }
                         else if (validMathOp) {
                             operation = ch;
                             ch = getchar();
-                            ++index;
                             continue;
                         }
                         else if (closeBraces) {
@@ -295,7 +413,8 @@ int handleChoice(int choice) {
                             relationOperator = ch;
                             var1 = -1;
                             var2 = -1;
-                            index = 0;
+                            isVar1Digit = 0;
+                            isVar2Digit = 0;
                             ch = getchar();
                             continue;
                         }
@@ -305,22 +424,18 @@ int handleChoice(int choice) {
                             printSyntaxError();
                         }
                         isError = 1;
-                        while(ch != ' ') {
-                            ch = getchar();
-                            ++index;
-                        }
                         break;
                     }
                 }
-            }
+            } // end of while loop
             if (numOfOpeningBraces != numOfClosingBraces) {
                 if (!isError) {
                     printSyntaxError();
                 }
+
                 isError = 1;
-                while(ch != ' ') { //clean buffer
+                while(ch != '\n' && ch != ' ') {
                     ch = getchar();
-                    ++index;
                 }
                 break;
             }
@@ -330,6 +445,7 @@ int handleChoice(int choice) {
             } else {
                 printf("The statement is false.\n");
             }
+
             break;
         }
         case 2:
@@ -340,11 +456,8 @@ int handleChoice(int choice) {
             if (digit >= 10 || digit < 0 || number < 0) {
                 printPositiveMessage();
                 break;
-            } else if (number == 0 && digit == 0) {
-                printNumOfOccurrences(digit, 1, number);
-                break;
             } else if (number == 0) {
-                printNumOfOccurrences(digit, 0, number);
+                printNumOfOccurrences(digit, digit == 0 ? 1:0, number);
                 break;
             }
             int copyNumber = number, copyDigit = digit;
@@ -361,7 +474,7 @@ int handleChoice(int choice) {
                 printPositiveMessage();
                 break;
             }
-            (num1 > num2) ? gcd(num1, num2) : gcd(num2, num1);
+            gcd(num1, num2);
             break;
         }
         case 4:
@@ -377,8 +490,10 @@ int handleChoice(int choice) {
 /************************************************************************
 * function name: main *
 * The Input:  *
-* The output: prints the menu until user aborts and check the validity of the input *
-* The Function operation: calling functions and checking the validity of the input *
+* The output: prints the menu until user aborts
+ * and check the validity of the input *
+* The Function operation: calling functions and
+ * checking the validity of the input *
 *************************************************************************/
 int main () {
     while (1) {
@@ -386,10 +501,7 @@ int main () {
         int choice = 0;
         int isValidInput = scanf(" %d", &choice);
         if (isValidInput != 1) {
-            setbuf(stdout, 0);
-            printf("Fool of a Took!\n"
-                   "This is a serious journey, not a hobbit walking-party.\n"
-                   "Throw yourself in next time, and then you will be no further nuisance.\n");
+            printDefaultMessage();
             scanf("%*[^ ]");
             continue;
         }
@@ -397,5 +509,6 @@ int main () {
             break;
         }
     }
+
     return 0;
 }
