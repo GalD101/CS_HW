@@ -21,9 +21,8 @@ void printSection(int sectionIndex, char section[], int size) {
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             setbuf(stdout, 0);
-            printf("(%d %d %d)", sectionIndex, i, j);
+            printf("(%d %d %d) ", sectionIndex, i, j);
         }
-        printf(" ");
         for (int k = i*size; k < size*(i+1); k++) {
             setbuf(stdout, 0);
             printf("%c ", section[k]);
@@ -382,6 +381,7 @@ int game() {
         printSection(2, section2, SECTION_SIZE);
         printf("\n");
         printSection(3, section3, SECTION_SIZE);
+        printf("\n");
     }
 
     return 0;
@@ -394,21 +394,20 @@ int main () {
         char choice;
         scanf("%c", &choice);
         switch (choice) {
-            case 'Y':
             case 'y':
                 printf("Please enter your game sequence.\n");
                 if (game()) {
-                    printf("input incorrect.\n");
+                    printf("Input incorrect.\n");
                 }
 
                 printf("Would you like to continue? (y/n)\n");
                 continue;
-            case 'N':
             case 'n':
                 printf("YEET\n");
                 return 0;
             default:
-                break;
+                printf("YEET\n");
+                return 0;
         }
     } // end of while loop
 }
