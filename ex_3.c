@@ -182,20 +182,24 @@ int parseStatement(int var1, int var2, char op, int isNot, int isVar1Char, int i
             if (isVar1Char && isVar2Char) {
                 if (isCaps(var1)) {
                     if (isCaps(var2)) {
+
                         // both var1 and var2 are caps
                         return (var1 > var2) ? !isNot : isNot;
                     }
                     else {
+
                         // var1 is caps and var2 is small
                         return (var1 + ('a' - 'A') > var2) ? !isNot : isNot;
                     }
                 }
                 else {
                     if (isCaps(var2)) {
+
                         // var1 is small and var2 is caps
                         return (var1 > var2 + ('a' - 'A')) ? !isNot : isNot;
                     }
                     else {
+
                         // var1 is small and var2 is small
                         return (var1 > var2) ? !isNot : isNot;
                     }
@@ -209,16 +213,19 @@ int parseStatement(int var1, int var2, char op, int isNot, int isVar1Char, int i
                         return (var1 < var2) ? !isNot : isNot;
                     }
                     else {
+
                         // var1 is caps and var2 is small
                         return (var1 + ('a' - 'A') < var2) ? !isNot : isNot;
                     }
                 }
                 else {
                     if (isCaps(var2)) {
+
                         // var1 is small and var2 is caps
                         return (var1 < var2 + ('a' - 'A')) ? !isNot : isNot;
                     }
                     else {
+
                         // var1 is small and var2 is small
                         return (var1 < var2) ? !isNot : isNot;
                     }
