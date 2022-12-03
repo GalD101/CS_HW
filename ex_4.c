@@ -15,7 +15,7 @@ const char EMPTY_SPOT = '*';
 /************************************************************************
 * function name: initSection *
 * The Input: char section[][SECTION_SIZE], int size, char initVal *
-* The output: *
+* The output: no output *
 * The Function operation: initialize a 2d char array with an initial value *
 *************************************************************************/
 void initBoard(char board[][SECTION_SIZE][SECTION_SIZE], int size, char
@@ -28,13 +28,6 @@ initVal) {
         }
     }
 }
-
-//void printRow(char row[], int size) {
-//    for (int i = 0; i < size; i++) {
-//        printf("%c ", row[i]);
-//    }
-//    printf("\n");
-//}
 
 void printBoard(char section[][SECTION_SIZE][SECTION_SIZE], int size) {
     for (int i = 0; i < size; ++i) {
@@ -59,7 +52,7 @@ char determineRowWinner(char section[][SECTION_SIZE], int size) {
         for (int j = 1; j < size; ++j) {
             char cur = section[i][j];
             if (cur != prev) {
-                return '_';
+                return TIE;
             } else {
                 winner = cur;
             }
@@ -77,7 +70,7 @@ char determineColWinner(char section[][SECTION_SIZE], int size) {
         for (int j = 1; j < size; ++j) {
             char cur = section[j][i];
             if (cur != prev) {
-                return '_';
+                return TIE;
             } else {
                 winner = cur;
             }
@@ -95,7 +88,7 @@ char determineDiagWinner(char section[][SECTION_SIZE], int size) {
         char prev = section[i - 1][i - 1];
         char cur = section[i][i];
         if (cur != prev) {
-            return '_';
+            return TIE;
         } else {
             winner = cur;
         }
@@ -135,7 +128,7 @@ int isValidInput(char input) {
     return input == '0' || input == '1' || input == '2' || input == '3';
 }
 
-int updateBoard(char board[][SECTION_SIZE][SECTION_SIZE],int section,
+int updateBoard(char board[][SECTION_SIZE][SECTION_SIZE], int section,
                 int row, int col, int isXturn, const char EMPTY_SPOT) {
     int isSpotEmpty = board[section][row][col] == EMPTY_SPOT;
     if (isSpotEmpty) {
