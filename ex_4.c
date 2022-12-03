@@ -1,7 +1,19 @@
+/******************************************
+*Student name: Gal Dali
+*Student ID: 322558297
+*Exercise name: ex3
+******************************************/
+
 #include "stdio.h"
 
 #define SECTION_SIZE 4
 
+/************************************************************************
+* function name: initSection *
+* The Input: char section[][SECTION_SIZE], int size, char initVal *
+* The output: *
+* The Function operation: initialize a 2d char array with an initial value *
+*************************************************************************/
 void initSection(char section[][SECTION_SIZE], int size, char initVal) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -223,11 +235,26 @@ int determineWinner(int size,
     return TIE;
 }
 
-// game() will return 0 if there is a winner or a tie. It will return a 1 if there was an error
 
+int isValidInput(char input) {
+    return input == '0' || input == '1' || input == '2' || input == '3';
+}
+
+
+// todo: check how to define a char like '*' in a preprocessor
+int updateSection(char section[][SECTION_SIZE], int row, int col, int isXturn, const char EMPTY_SPOT) {
+    int isSpotEmpty = section[row][col] == EMPTY_SPOT;
+    if (isSpotEmpty) {
+        section[row][col] = isXturn ? 'X':'O';
+    }
+
+    return !isSpotEmpty;
+}
+
+// game() will return 0 if there is a winner or a tie. It will return a 1 if there was an error
 int game() {
     const char EMPTY_SPOT = '*';
-    char winner = 'q';
+    char winner = '_';
     char section0 [SECTION_SIZE][SECTION_SIZE];
     char section1 [SECTION_SIZE][SECTION_SIZE];
     char section2 [SECTION_SIZE][SECTION_SIZE];
@@ -249,98 +276,77 @@ int game() {
     while (input == '\n' || input == ' ') {
         input = getchar();
     }
-    while (winner == 'q') { //!(winner || isTie)
+    while (winner == '_') { //!(winner || isTie)
         int chosenSection = 0, chosenRow = 0, chosenColumn = 0;
         while (input != '\n') {
+            if (!isValidInput(input)) {
+                return 1;
+            }
+            int integerInput = input - '0';
             switch (index % 3) {
                 case section: {
-                    //todo: get the switch statements into a function or just convert from char to int (but remember to check validity first!)
-                    switch (input) {
-                        case '0':
-                            chosenSection = 0;
-                            break;
-                        case '1':
-                            chosenSection = 1;
-                            break;
-                        case '2':
-                            chosenSection = 2;
-                            break;
-                        case '3':
-                            chosenSection = 3;
-                            break;
-                        default:
-                            return 1;
-                    }
+                    chosenSection = integerInput;
                     break;
                 }
                 case row: {
-                    switch (input) {
-                        case '0':
-                            chosenRow = 0;
-                            break;
-                        case '1':
-                            chosenRow = 1;
-                            break;
-                        case '2':
-                            chosenRow = 2;
-                            break;
-                        case '3':
-                            chosenRow = 3;
-                            break;
-                        default:
-                            return 1;
-                    }
+                    chosenRow = integerInput;
                     break;
                 }
                 case column: {
-                    switch (input) {
-                        case '0':
-                            chosenColumn = 0;
-                            break;
-                        case '1':
-                            chosenColumn = 1;
-                            break;
-                        case '2':
-                            chosenColumn = 2;
-                            break;
-                        case '3':
-                            chosenColumn = 3;
-                            break;
-                        default:
-                            return 1;
-                    }
+                    chosenColumn = integerInput;
 
                     if (chosenSection != -1 && chosenRow != -1 && chosenColumn != -1) { //we have all the info we need!
                         switch (chosenSection) {
                             case 0: //todo: use a damn function
-                                if (section0[chosenRow][chosenColumn] == EMPTY_SPOT) {
-                                    section0[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-                                    break;
+                            // check if section is empty
+                            // if it is set
+                            // else return input incorrect
+                                if (updateSection(section0, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
+                                    return 1;
                                 }
-
-                                return 1;
+                                break;
+//                                if (section0[chosenRow][chosenColumn] == EMPTY_SPOT) {
+//                                    section0[chosenRow][chosenColumn] = isXturn ? 'X':'O';
+//                                    break;
+//                                }
+//
+//                                return 1;
                             case 1:
-                                if (section1[chosenRow][chosenColumn] == EMPTY_SPOT) {
-                                    section1[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-                                    break;
+                                if (updateSection(section1, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
+                                    return 1;
                                 }
-                                return 1;
+                                break;
+//                                if (section1[chosenRow][chosenColumn] == EMPTY_SPOT) {
+//                                    section1[chosenRow][chosenColumn] = isXturn ? 'X':'O';
+//                                    break;
+//                                }
+//                                return 1;
                             case 2:
-                                if (section2[chosenRow][chosenColumn] == EMPTY_SPOT) {
-                                    section2[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-                                    break;
+                                if (updateSection(section2, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
+                                    return 1;
                                 }
-                                return 1;
+                                break;
+//                                if (section2[chosenRow][chosenColumn] == EMPTY_SPOT) {
+//                                    section2[chosenRow][chosenColumn] = isXturn ? 'X':'O';
+//                                    break;
+//                                }
+//                                return 1;
                             case 3:
-                                if (section3[chosenRow][chosenColumn] == EMPTY_SPOT) {
-                                    section3[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-                                    break;
+                                if (updateSection(section0, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
+                                    return 1;
                                 }
-                                return 1;
+                                break;
+//                                if (section3[chosenRow][chosenColumn] == EMPTY_SPOT) {
+//                                    section3[chosenRow][chosenColumn] = isXturn ? 'X':'O';
+//                                    break;
+//                                }
+//                                return 1;
+                            default:
+                                break;
                         }
                         isXturn = !isXturn;
-                        break;
                     }
+                    break;
                 }
                 default: {
                     return 1;
@@ -358,6 +364,9 @@ int game() {
             ++index;
         }
 
+        if (index < 2) {
+            return 1;
+        }
         winner = determineWinner(SECTION_SIZE, section0, section1, section2, section3);
         switch (winner) {
             case 'X':
@@ -406,8 +415,7 @@ int main () {
                 printf("YEET\n");
                 return 0;
             default:
-                printf("YEET\n");
-                return 0;
+                break;
         }
     } // end of while loop
 }
