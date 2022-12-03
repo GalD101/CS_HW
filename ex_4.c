@@ -295,52 +295,28 @@ int game() {
                 case column: {
                     chosenColumn = integerInput;
 
-                    if (chosenSection != -1 && chosenRow != -1 && chosenColumn != -1) { //we have all the info we need!
+                    if (chosenSection != -1 && chosenRow != -1 && chosenColumn != -1) {
                         switch (chosenSection) {
-                            case 0: //todo: use a damn function
-                            // check if section is empty
-                            // if it is set
-                            // else return input incorrect
+                            case 0:
                                 if (updateSection(section0, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
                                     return 1;
                                 }
                                 break;
-//                                if (section0[chosenRow][chosenColumn] == EMPTY_SPOT) {
-//                                    section0[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-//                                    break;
-//                                }
-//
-//                                return 1;
                             case 1:
                                 if (updateSection(section1, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
                                     return 1;
                                 }
                                 break;
-//                                if (section1[chosenRow][chosenColumn] == EMPTY_SPOT) {
-//                                    section1[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-//                                    break;
-//                                }
-//                                return 1;
                             case 2:
                                 if (updateSection(section2, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
                                     return 1;
                                 }
                                 break;
-//                                if (section2[chosenRow][chosenColumn] == EMPTY_SPOT) {
-//                                    section2[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-//                                    break;
-//                                }
-//                                return 1;
                             case 3:
-                                if (updateSection(section0, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
+                                if (updateSection(section3, chosenRow, chosenColumn, isXturn, EMPTY_SPOT)) {
                                     return 1;
                                 }
                                 break;
-//                                if (section3[chosenRow][chosenColumn] == EMPTY_SPOT) {
-//                                    section3[chosenRow][chosenColumn] = isXturn ? 'X':'O';
-//                                    break;
-//                                }
-//                                return 1;
                             default:
                                 break;
                         }
