@@ -45,14 +45,14 @@ int countDigit(int number, int digit, int occurrences) {
 * The Function operation: calculates the greatest common divider of the
  * numbers a and b *
 *************************************************************************/
-int gcd(int a, int b) {
+long long int gcd(long long int a, long long int b) {
     int min = 0, max = 0;
     if (a == 0) {
-        printf("GCD = %d\n", b);
+        printf("GCD = %lld\n", b);
         return b;
     }
     if (b == 0) {
-        printf("GCD = %d\n", a);
+        printf("GCD = %lld\n", a);
         return a;
     }
     if (a > b) {
@@ -68,7 +68,7 @@ int gcd(int a, int b) {
         copyMax -= min;
         ++num;
     }
-    printf("%d*%d+%d = %d (num1=%d, num2=%d)\n", min, num,
+    printf("%lld*%lld+%lld = %lld (num1=%d, num2=%d)\n", min, num,
            (max - min * num), max, max, min);
     gcd(min, max - min * num);
 }
@@ -246,8 +246,8 @@ void printPositiveMessage() {
 * The Function operation: prints the digit, the number
  * and the number of occurrences to the screen *
 *************************************************************************/
-int printNumOfOccurrences(int digit, int occurrences, int number) {
-    printf("The digit %d appears %d times in the number %d\n",
+int printNumOfOccurrences(int digit, int occurrences, long long int number) {
+    printf("The digit %d appears %d times in the number %lld\n",
            digit, occurrences, number);
 }
 
@@ -443,8 +443,9 @@ int handleChoice(int choice) {
         }
         case 2: {
             printf("\nEnter a number and a digit: ");
-            int number = 0, digit = 0;
-            scanf("%d %d", &number, &digit);
+            long long int number = 0;
+            int digit = 0;
+            scanf("%lld %d", &number, &digit);
             if (digit >= 10 || digit < 0 || number < 0) {
                 printPositiveMessage();
                 break;
@@ -459,8 +460,8 @@ int handleChoice(int choice) {
         }
         case 3: {
             printf("\nEnter two positive numbers: ");
-            int num1, num2;
-            scanf("%d %d", &num1, &num2);
+            long long int num1, num2;
+            scanf("%lld %lld", &num1, &num2);
             if (num1 < 0 || num2 < 0) {
                 printPositiveMessage();
                 break;
