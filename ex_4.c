@@ -1,7 +1,7 @@
 /******************************************
 *Student name: Gal Dali
 *Student ID: 322558297
-*Exercise name: ex3
+*Exercise name: ex4
 ******************************************/
 
 #include "stdio.h"
@@ -63,20 +63,24 @@ void printBoard(char board[][SECTION_SIZE][SECTION_SIZE], int size) {
 char determineRowWinner(char section[][SECTION_SIZE], int size) {
     char winner = NO_WINNER;
     char prev, cur;
+    int seqCounter = 0;
 
     for (int i = 0; i < size; ++i) {
         prev = section[i][0];
+        seqCounter = 0;
         for (int j = 1; j < size; ++j) {
             cur = section[i][j];
-            if (cur != prev) {
-                return TIE;
-            } else {
+            if (cur == prev && (cur == 'X' || cur == 'O')) {
+                ++seqCounter;
                 winner = cur;
+                if (seqCounter == size - 1) {
+                    return winner;
+                }
             }
             prev = cur;
         }
     }
-    return winner;
+    return TIE;
 }
 
 /************************************************************************
@@ -90,20 +94,24 @@ char determineRowWinner(char section[][SECTION_SIZE], int size) {
 char determineColWinner(char section[][SECTION_SIZE], int size) {
     char winner = NO_WINNER;
     char prev, cur;
+    int seqCounter = 0;
 
     for (int i = 0; i < size; ++i) {
         prev = section[0][i];
+        seqCounter = 0;
         for (int j = 1; j < size; ++j) {
             cur = section[j][i];
-            if (cur != prev) {
-                return TIE;
-            } else {
+            if (cur == prev && (cur == 'X' || cur == 'O')) {
+                ++seqCounter;
                 winner = cur;
+                if (seqCounter == size - 1) {
+                    return winner;
+                }
             }
             prev = cur;
         }
     }
-    return winner;
+    return TIE;
 }
 
 /************************************************************************
@@ -116,33 +124,42 @@ char determineColWinner(char section[][SECTION_SIZE], int size) {
 *************************************************************************/
 char determineMultiColWinner(char board[][SECTION_SIZE][SECTION_SIZE], int
 size) {
-    char cur = NO_WINNER;
+    char cur;
+    int seqCounter = 0;
 
     for (int i = 0; i < size; ++i) {
-        cur = board[0][0][i];
-        if (cur == board[1][1][i] && cur == board[2][2][i] &&
-            cur == board[3][3][i]) {
+        for (int j = 0; j < size; ++j) {
+            cur = board[0][i][j];
+            seqCounter = 0;
             if (cur == 'X' || cur == 'O') {
-                return cur;
+                for (int k = 1; k < size; ++k) {
+                    if (board[k][i][j] == cur) {
+                        ++seqCounter;
+                        if (seqCounter == size - 1) {
+                            return cur;
+                        }
+                    }
+                }
             }
         }
     }
 
-    return NO_WINNER;
+    return TIE;
 }
 
 /************************************************************************
-* function name: determineDiagWinner *
+* function name: determineLtRDiagWinner *
 * The Input: char section[][SECTION_SIZE], int size *
-* The output: return the char of the diag winner. return '_' (NO_WINNER) if
- * no winner was found *
+* The output: return the char of the left to right diagonal winner.
+ * return '_' (NO_WINNER) if no winner was found *
 * The Function operation: loop over the given section and determine if there
- * is a diag winner and who is the diag winner *
+ * is a left to right diagonal winner and who is the winner *
 *************************************************************************/
-char determineDiagWinner(char section[][SECTION_SIZE], int size) {
+char determineLtRDiagWinner(char section[][SECTION_SIZE], int size) {
     char winner = NO_WINNER;
     char prev;
     char cur;
+
     for (int i = 1; i < size; ++i) {
         prev = section[i - 1][i - 1];
         cur = section[i][i];
@@ -154,6 +171,24 @@ char determineDiagWinner(char section[][SECTION_SIZE], int size) {
     }
 
     return winner;
+}
+
+/************************************************************************
+* function name: determineRtLDiagWinner *
+* The Input: char section[][SECTION_SIZE], int size *
+* The output: return the char of the left to right diagonal winner.
+ * return '_' (NO_WINNER) if no winner was found *
+* The Function operation: check the given section and determine if there
+ * is a right to left diagonal winner and who is the winner *
+*************************************************************************/
+char determineRtLDiagWinner(char section[][SECTION_SIZE]) {
+    char rightMost = section[0][3];
+    if (rightMost == section[1][2] && rightMost == section[2][1] &&
+        rightMost == section[3][0]) {
+        return rightMost;
+    }
+
+    return TIE;
 }
 
 /************************************************************************
@@ -178,9 +213,13 @@ char determineWinnerBoard(char board[][SECTION_SIZE][SECTION_SIZE], int size,
         if (colWinner == 'X' || colWinner == 'O') {
             return colWinner;
         }
-        char diagWinner = determineDiagWinner(board[i], size);
-        if (diagWinner == 'X' || diagWinner == 'O') {
-            return diagWinner;
+        char diagLtRWinner = determineLtRDiagWinner(board[i], size);
+        if (diagLtRWinner == 'X' || diagLtRWinner == 'O') {
+            return diagLtRWinner;
+        }
+        char diagRtLWinner = determineRtLDiagWinner(board[i]);
+        if (diagRtLWinner == 'X' || diagRtLWinner == 'O') {
+            return diagRtLWinner;
         }
     }
 
@@ -264,6 +303,8 @@ int game() {
     int chosenSection = 0, chosenRow = 0, chosenColumn = 0;
     while (input != '\n' && winner == NO_WINNER) {
         if (!isValidInput(input)) {
+
+            // Clean input stream before returning an error
             while (input != '\n') {
                 input = getchar();
             }
@@ -284,6 +325,8 @@ int game() {
 
                 if (updateBoard(board, chosenSection, chosenRow,
                                 chosenColumn, isXturn)) {
+
+                    // Clean input stream before returning an error
                     while (input != '\n') {
                         input = getchar();
                     }
@@ -298,6 +341,7 @@ int game() {
                 break;
             }
             default: {
+                // Clean input stream before returning an error
                 while (input != '\n') {
                     input = getchar();
                 }
@@ -322,6 +366,8 @@ int game() {
 
     // if the number of characters is not a multiple of 3 there is an error
     if (index % 3 != 0) {
+
+        // Clean input stream before returning an error
         while (input != '\n') {
             input = getchar();
         }
@@ -345,6 +391,7 @@ int game() {
 
     printBoard(board, SECTION_SIZE);
 
+    // Clean input stream
     while (input != '\n') {
         input = getchar();
     }
@@ -376,7 +423,7 @@ int main() {
                 continue;
             case 'n':
             default:
-                printf("YEET\n");
+                printf("YEET");
                 return 0;
         }
     }
