@@ -21,7 +21,7 @@ void printMenu();
 void printPhonebook(Contact* phonebook[], int size);
 int findContactByNum(Contact* phonebook[], int size);
 Contact* findContactByName(Contact* phonebook[], int size);
-int updatePhoneNum(Contact* phonebook, int size);
+int updatePhoneNum(Contact* phonebook[], int size);
 
 void setup (Contact* phonebook[]) {
 
@@ -54,12 +54,11 @@ void teardown(Contact* phonebook[]) {
         free(phonebook[i]->lastName);
         free(phonebook[i]->phoneNum);
         free(phonebook[i]->next);
-        free(phonebook[i]);
     }
 }
 
 
-// TODO: use another function for search for delete and searchbyname
+// TODO: use another function for search for delete and searchbyname NOPE
 int deleteContactFromPhonebook(Contact* phonebook[]) {
     printf("Enter a contact name (<first name> <last name>): ");
     char firstName[SIZE];
@@ -67,11 +66,14 @@ int deleteContactFromPhonebook(Contact* phonebook[]) {
     scanf("%s %s", firstName, lastName);
 
     int firstLetterLastNameIndex = letterIndex(lastName[0]);
-    Contact ** listContactMayBeIn = &phonebook[firstLetterLastNameIndex];
-    Contact **prev = &phonebook[firstLetterLastNameIndex];
-    while ((*listContactMayBeIn)->firstName != NULL) {
-        if ((strcmp((*listContactMayBeIn)->firstName, firstName) == 0) &&
-            (strcmp((*listContactMayBeIn)->lastName, lastName) == 0)) {
+    Contact * currentContact = phonebook[firstLetterLastNameIndex];
+    Contact * prevContact = phonebook[firstLetterLastNameIndex];
+
+    while (currentContact->firstName != NULL) {
+        if ((strcmp(currentContact->firstName, firstName) == 0) &&
+            (strcmp(currentContact->lastName, lastName) == 0)) {
+
+            // Found contact to delete
             printf("Are you sure? (y/n) ");
             char confirm;
             while(getchar() != '\n') {
@@ -84,38 +86,40 @@ int deleteContactFromPhonebook(Contact* phonebook[]) {
             }
 
             // If the node is the head (the first item in the list)
-            if ((*prev) == (*listContactMayBeIn)) {
-                if ((*listContactMayBeIn)->next == NULL) {
-                    (*listContactMayBeIn)->firstName = NULL;
-                    (*listContactMayBeIn)->lastName = NULL;
-                    (*listContactMayBeIn)->phoneNum = NULL;
-                    (*listContactMayBeIn)->next = NULL;
+            if (prevContact == currentContact) {
+
+                // If the node is the only node in the list
+                if (currentContact->next == NULL) {
+                    currentContact->firstName = NULL;
+                    currentContact->lastName = NULL;
+                    currentContact->phoneNum = NULL;
+                    currentContact->next = NULL;
                     printf("The contact has been deleted successfully!\n");
                     return 0;
                 }
-                **listContactMayBeIn = *(*(listContactMayBeIn))->next;
+                currentContact = currentContact->next;
                 printf("The contact has been deleted successfully!\n");
                 return 0;
             }
 
             // leaf
-            if ((*listContactMayBeIn)->next == NULL) {
-                (*prev)->next = NULL;
+            if (currentContact->next == NULL) {
+                prevContact->next = NULL;
                 printf("The contact has been deleted successfully!\n");
                 return 0;
             }
 
             // else, middle:
-            Contact * temp = (*listContactMayBeIn)->next;
-            free ((*prev)->next);
-            (*prev)->next = temp;
+            Contact * temp = currentContact->next;
+            free (prevContact->next);
+            prevContact->next = temp;
             return 0;
         }
-        prev = listContactMayBeIn;
-        if ((*listContactMayBeIn)->next == NULL) {
+        prevContact = currentContact;
+        if (currentContact->next == NULL) {
             break;
         }
-        listContactMayBeIn = &(*listContactMayBeIn)->next;
+        currentContact = currentContact->next;
     }
     printf("The deletion of the contact has failed!\n");
 }
@@ -156,7 +160,7 @@ void printPhonebook(Contact* phonebook[], int size) {
             for (int k = 1; k < numOfContacts - f; ++k) {
                 anotherOne = *anotherOne.next;
             }
-            printf("%10s %10s %10s\n",
+            printf("%-10s %-10s %-10s\n",
                    anotherOne.firstName, anotherOne.lastName, anotherOne.phoneNum);
             anotherOne = *phonebook[i];
         }
@@ -327,7 +331,7 @@ Contact* findContactByName(Contact* phonebook[], int size) {
     return NULL;
 }
 
-int updatePhoneNum(Contact* phonebook, int size) {
+int updatePhoneNum(Contact* phonebook[], int size) {
     Contact* contactToUpdate = findContactByName(phonebook, size);
     if (contactToUpdate == NULL) {
 
@@ -356,7 +360,6 @@ enum Options {
 int main() {
     Contact* phonebook[ALPHABET_LENGTH];
     setup(phonebook);
-
     printMenu();
     while (1) {
         int choice;
@@ -389,8 +392,7 @@ int main() {
                     break;
                 case EXIT:
                     printf("Bye!");
-                    // free space here? YES
-                    // teardown();
+                    teardown(phonebook);
                     exit(0);
                     break;
                 default:
