@@ -137,31 +137,30 @@ int addContactToPhonebook(Contact* phonebook[], int size) {
 
 
     for (int i = 0; i < size; ++i) {
-        Contact ** forloopIndex = &phonebook[i];
-        while ((*forloopIndex)->firstName != NULL) {
-            if (strcmp((*forloopIndex)->firstName, firstName) == 0
-                && strcmp((*forloopIndex)->lastName, lastName) == 0) {
+        Contact * forloopIndex = phonebook[i];
+        while (forloopIndex->firstName != NULL) {
+            if (strcmp(forloopIndex->firstName, firstName) == 0
+                && strcmp(forloopIndex->lastName, lastName) == 0) {
                 printf("The addition of the contact has failed, "
                        "since the contact %s %s already exists!\n", firstName,
                        lastName);
                 return 2;
             }
-            if (strcmp((*forloopIndex)->phoneNum, phoneNum) == 0) {
+            if (strcmp(forloopIndex->phoneNum, phoneNum) == 0) {
                 printf("The addition of the contact has failed, "
                        "since the phone number %s already exists!\n", phoneNum);
                 return 3;
             }
-            if ((*forloopIndex)->next == NULL) {
+            if (forloopIndex->next == NULL) {
                 break;
             }
-            (*forloopIndex) = (*forloopIndex)->next;
+            forloopIndex = forloopIndex->next;
         }
 
     }
 
     int pos = lastName[0] - 'A';
     Contact * matchingLastNamelist = phonebook[pos];
-    Contact ** loopIndex = &matchingLastNamelist;
     if (matchingLastNamelist->firstName == NULL) {
         matchingLastNamelist->firstName = (char*) malloc(SIZE);
         matchingLastNamelist->lastName = (char*) malloc(SIZE);
@@ -182,23 +181,30 @@ int addContactToPhonebook(Contact* phonebook[], int size) {
         return 0;
     }
 
-    (*loopIndex)->next = (Contact*) malloc(sizeof(Contact));
-    (*loopIndex)->next->firstName = (char*) malloc(SIZE);
-    (*loopIndex)->next->lastName = (char*) malloc(SIZE);
-    (*loopIndex)->next->phoneNum = (char*) malloc(SIZE);
+    Contact * loopIndex = matchingLastNamelist;
+    while (loopIndex->firstName != NULL) {
+        if (loopIndex->next == NULL) {
+            break;
+        }
+        loopIndex = loopIndex->next;
+    }
+    loopIndex->next = (Contact*) malloc(sizeof(Contact));
+    loopIndex->next->firstName = (char*) malloc(SIZE);
+    loopIndex->next->lastName = (char*) malloc(SIZE);
+    loopIndex->next->phoneNum = (char*) malloc(SIZE);
 
-    if ((*loopIndex)->next == NULL ||
-        (*loopIndex)->next->firstName == NULL ||
-        (*loopIndex)->next->lastName  == NULL ||
-        (*loopIndex)->next->phoneNum  == NULL) {
+    if (loopIndex->next == NULL ||
+        loopIndex->next->firstName == NULL ||
+        loopIndex->next->lastName  == NULL ||
+        loopIndex->next->phoneNum  == NULL) {
         printf("The addition of the contact has failed!\n");
         return 1;
     }
 
-    strcpy((*loopIndex)->next->firstName, firstName);
-    strcpy((*loopIndex)->next->lastName, lastName);
-    strcpy((*loopIndex)->next->phoneNum, phoneNum);
-    matchingLastNamelist->next->next = NULL;
+    strcpy(loopIndex->next->firstName, firstName);
+    strcpy(loopIndex->next->lastName, lastName);
+    strcpy(loopIndex->next->phoneNum, phoneNum);
+    loopIndex->next->next = NULL;
     printf("The contact has been added successfully!\n");
     return 0;
 }
