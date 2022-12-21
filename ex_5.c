@@ -72,17 +72,29 @@ void printMenu() {
 void printPhonebook(Contact* phonebook[], int size) {
     for (int i = 0; i < size; ++i) {
         Contact loopVar = *phonebook[i];
+        Contact anotherOne = *phonebook[i];
         if (loopVar.firstName == NULL) {
             continue;
         }
+        int j = 0;
         do {
-            printf("%10s %10s %10s\n",
-                   loopVar.firstName, loopVar.lastName, loopVar.phoneNum);
+            ++j;
+//            printf("%10s %10s %10s\n",
+//                   loopVar.firstName, loopVar.lastName, loopVar.phoneNum);
             if (loopVar.next == NULL) {
                 break;
             }
             loopVar = *loopVar.next;
         } while (loopVar.firstName);
+
+        for (int f = 0; f < j; ++f) {
+            for (int k = 1; k < j - f; ++k) {
+                anotherOne = *anotherOne.next;
+            }
+            printf("%10s %10s %10s\n",
+                   anotherOne.firstName, anotherOne.lastName, anotherOne.phoneNum);
+            anotherOne = *phonebook[i];
+        }
     }
 }
 
