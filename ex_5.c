@@ -25,6 +25,7 @@ int updatePhoneNum(Contact* phonebook[], int size);
 
 void setup (Contact* phonebook[]) {
 
+    // TODO: Check if this is necessary
     // Initialize phone book and allocate memory
     for (int i = 0; i < ALPHABET_LENGTH; ++i) {
         phonebook[i] = (Contact*)malloc(sizeof(Contact*));
@@ -111,7 +112,7 @@ int deleteContactFromPhonebook(Contact* phonebook[]) {
 
             // else, middle:
             Contact * temp = currentContact->next;
-            free (prevContact->next);
+            free(prevContact->next);
             prevContact->next = temp;
             return 0;
         }
@@ -211,7 +212,7 @@ int addContactToPhonebook(Contact* phonebook[], int size) {
 
     }
 
-    int indexByLastName = lastName[0] - 'A';
+    int indexByLastName = letterIndex(lastName[0]);
     Contact * matchingLastNamelist = phonebook[indexByLastName];
 
     // If name is NULL than I assume the whole struct is empty
@@ -406,18 +407,3 @@ int main() {
         }
     }
 }
-
-
-
-
-
-
-
-
-////    char str[6] = "";
-////    scanf("%[^\n]", str);
-////    printf("%s", str);
-//    int* mPtr = (int*) malloc(99999999999999);
-//    if (mPtr == NULL) { return 1; }
-//    return 0;
-
