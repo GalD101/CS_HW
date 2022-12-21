@@ -123,7 +123,22 @@ int addContactToPhonebook(Contact* phonebook[]) {
         return 0;
     }
 
-    while ((*loopIndex)->next != NULL) {
+    while ((*loopIndex)->firstName != NULL) {
+        printf("%s\n", (*loopIndex)->firstName);
+        printf("%s\n", (*loopIndex)->lastName);
+        printf("%s\n", (*loopIndex)->phoneNum);
+        if (strcmp((*loopIndex)->firstName, firstName) == 0
+        && strcmp((*loopIndex)->lastName, lastName) == 0) {
+            printf("SAME NAME ERROR");
+            return 1;
+        }
+        if (strcmp((*loopIndex)->phoneNum, phoneNum) == 0) {
+            printf("SAME PHONE ERROR");
+            return 1;
+        }
+        if ((*loopIndex)->next == NULL) {
+            break;
+        }
         (*loopIndex) = (*loopIndex)->next;
     }
 
