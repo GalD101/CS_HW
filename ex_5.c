@@ -13,15 +13,16 @@ typedef struct Contact {
 } Contact;
 
 
-int addContactToPhonebook(Contact* phonebook[]);
+int addContactToPhonebook(Contact* phonebook[], int size);
 int deleteContactFromPhonebook(Contact* phonebook[]);
 void printMenu();
 void printPhonebook(Contact* phonebook[], int size);
 int findContactByNum(Contact* phonebook[], int size);
-int findContactByName(Contact* phonebook[], int size);
-void updatePhoneNum();
+Contact* findContactByName(Contact* phonebook[], int size);
+int updatePhoneNum(Contact* phonebook, int size);
 
 
+// TODO: use another function for search fo delete and searchbyname
 int deleteContactFromPhonebook(Contact* phonebook[]) {
     printf("Enter a contact name (<first name> <last name>): ");
     char firstName[SIZE];
@@ -124,7 +125,7 @@ void printPhonebook(Contact* phonebook[], int size) {
     }
 }
 
-int addContactToPhonebook(Contact* phonebook[]) {
+int addContactToPhonebook(Contact* phonebook[], int size) {
 
     // Get contact details from user
     printf("Enter a contact details"
@@ -133,6 +134,30 @@ int addContactToPhonebook(Contact* phonebook[]) {
     char lastName[SIZE];
     char phoneNum[SIZE];
     scanf("%s %s %s", firstName, lastName, phoneNum);
+
+
+    for (int i = 0; i < size; ++i) {
+        Contact ** forloopIndex = &phonebook[i];
+        while ((*forloopIndex)->firstName != NULL) {
+            if (strcmp((*forloopIndex)->firstName, firstName) == 0
+                && strcmp((*forloopIndex)->lastName, lastName) == 0) {
+                printf("The addition of the contact has failed, "
+                       "since the contact %s %s already exists!\n", firstName,
+                       lastName);
+                return 2;
+            }
+            if (strcmp((*forloopIndex)->phoneNum, phoneNum) == 0) {
+                printf("The addition of the contact has failed, "
+                       "since the phone number %s already exists!\n", phoneNum);
+                return 3;
+            }
+            if ((*forloopIndex)->next == NULL) {
+                break;
+            }
+            (*forloopIndex) = (*forloopIndex)->next;
+        }
+
+    }
 
     int pos = lastName[0] - 'A';
     Contact * matchingLastNamelist = phonebook[pos];
@@ -155,25 +180,6 @@ int addContactToPhonebook(Contact* phonebook[]) {
         matchingLastNamelist->next = NULL;
         printf("The contact has been added successfully!\n");
         return 0;
-    }
-
-    while ((*loopIndex)->firstName != NULL) {
-        if (strcmp((*loopIndex)->firstName, firstName) == 0
-        && strcmp((*loopIndex)->lastName, lastName) == 0) {
-            printf("The addition of the contact has failed, "
-                   "since the contact %s %s already exists!\n", firstName,
-                   lastName);
-            return 2;
-        }
-        if (strcmp((*loopIndex)->phoneNum, phoneNum) == 0) {
-            printf("The addition of the contact has failed, "
-                   "since the phone number %s already exists!\n", phoneNum);
-            return 3;
-        }
-        if ((*loopIndex)->next == NULL) {
-            break;
-        }
-        (*loopIndex) = (*loopIndex)->next;
     }
 
     (*loopIndex)->next = (Contact*) malloc(sizeof(Contact));
@@ -222,7 +228,7 @@ int findContactByNum(Contact* phonebook[], int size) {
     return 1;
 }
 
-int findContactByName(Contact* phonebook[], int size) {
+Contact* findContactByName(Contact* phonebook[], int size) {
     printf("Enter a contact name (<first name> <last name>): ");
     char firstName[SIZE], lastName[SIZE];
     scanf("%s %s", firstName, lastName);
@@ -237,7 +243,7 @@ int findContactByName(Contact* phonebook[], int size) {
                    matchingLastNamelist->firstName,
                    matchingLastNamelist->lastName,
                    matchingLastNamelist->phoneNum);
-            return 0;
+            return matchingLastNamelist;
         }
         if (matchingLastNamelist->next == NULL) {
             break;
@@ -246,7 +252,23 @@ int findContactByName(Contact* phonebook[], int size) {
     }
     printf("No contact with a name %s %s was found in the phone book",
            firstName, lastName);
-    return 1;
+    return NULL;
+}
+
+int updatePhoneNum(Contact* phonebook, int size) {
+    Contact* contactToUpdate = findContactByName(phonebook, size);
+    if (contactToUpdate == NULL) {
+        // The contact doesn't exist abort;
+        printf("");
+        return 1;
+    }
+
+    printf("Enter the new phone number: ");
+    char newPhoneNum[SIZE];
+    scanf("%s", newPhoneNum);
+
+    strcpy(contactToUpdate->phoneNum, newPhoneNum);
+    return 0;
 }
 
 enum Options {
@@ -290,7 +312,7 @@ int main() {
         if (choice >= 1 && choice <= 7) {
             switch (choice) {
                 case ADD:
-                    addContactToPhonebook(phonebook);
+                    addContactToPhonebook(phonebook, 26);
                     printMenu();
                     break;
                 case DELETE:
@@ -306,6 +328,7 @@ int main() {
                     printMenu();
                     break;
                 case UPDATE:
+                    updatePhoneNum(phonebook, 26);
                     printMenu();
                     break;
                 case PRINT:
