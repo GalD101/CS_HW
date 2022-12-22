@@ -75,7 +75,7 @@ int deleteContactFromPhonebook(Contact* phonebook[]) {
             (strcmp(currentContact->lastName, lastName) == 0)) {
 
             // Found contact to delete
-            printf("Are you sure? (y/n) ");
+            printf("\nAre you sure? (y/n) ");
             char confirm;
             while(getchar() != '\n') {
                 getchar();
@@ -171,8 +171,8 @@ void printPhonebook(Contact* phonebook[], int size) {
 int addContactToPhonebook(Contact* phonebook[], int size) {
 
     // Get contact details from user
-    printf("Enter a contact details"
-           "(<first name> <last name> <phone number>):\n");
+    printf("Enter a contact details "
+           "(<first name> <last name> <phone number>): ");
     char firstName[SIZE];
     char lastName[SIZE];
     char phoneNum[SIZE];
@@ -344,7 +344,32 @@ int updatePhoneNum(Contact* phonebook[], int size) {
     char newPhoneNum[SIZE];
     scanf("%s", newPhoneNum);
 
+    // Check if the number already exists
+    for (int i = 0; i < size; ++i) {
+        Contact * currentList = phonebook[i];
+
+        // If name is NULL than I assume the whole struct is empty
+        while (currentList->firstName != NULL) {
+
+            // Check if there is an existing contact with the same phone number
+            if (strcmp(currentList->phoneNum, newPhoneNum) == 0) {
+                printf("The update of the contact has failed, "
+                       "since the phone number %s already exists!\n", newPhoneNum);
+                return 3;
+            }
+
+            // break from the loop when reacheing the last Contact
+            if (currentList->next == NULL) {
+                break;
+            }
+
+            // Move the pointer to the next Contact in the current list
+            currentList = currentList->next;
+        }
+
+    }
     strcpy(contactToUpdate->phoneNum, newPhoneNum);
+    printf("The contact has been updated successfully!\n");
     return 0;
 }
 
@@ -397,12 +422,12 @@ int main() {
                     exit(0);
                     break;
                 default:
-                    printf("Wrong option, try again: ");
+                    printf("Wrong option, try again:\n");
                     break;
             }
         }
         else {
-            printf("Wrong option, try again:");
+            printf("Wrong option, try again:\n");
             continue;
         }
     }
