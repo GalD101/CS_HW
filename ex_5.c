@@ -1,11 +1,19 @@
+/******************************************
+*Student name: Gal Dali
+*Student ID: 322558297
+*Exercise name: ex4
+******************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "string.h"
 
+// Define global constants and macro
 #define SIZE 11
 #define ALPHABET_LENGTH 26
 #define letterIndex(a) (a - 'A')
 
+// Define Contact object
 typedef struct Contact {
     char *firstName;
     char *lastName;
@@ -13,21 +21,88 @@ typedef struct Contact {
     struct Contact *next;
 } Contact;
 
-
+/************************************************************************
+* function name: printMenu *
+* The Input: *
+* The output: prints the menu *
+* The Function operation: print the menu to the screen using printf *
+*************************************************************************/
 void printMenu();
 
-void teardown(Contact *phonebook[]);
+/************************************************************************
+* function name: tearDown *
+* The Input: Contact *phonebook[] *
+* The output: no output *
+* The Function operation: Frees all the memory in phonebook which was
+ * dynamically allocated during execution of the program *
+*************************************************************************/
+void tearDown(Contact *phonebook[]);
 
+/************************************************************************
+* function name: addContactToPhonebook *
+* The Input: Contact *phonebook[], int size *
+* The output: Asks the user for details and prints if the contact was added
+ * to the phonebook or not. Returns 0 on success, 1 on failure *
+* The Function operation: Gets input from the user, tries to add the contact
+ * to the phonebook and prints whether or not it succeeded *
+*************************************************************************/
 int addContactToPhonebook(Contact *phonebook[], int size);
 
+/************************************************************************
+* function name: deleteContactFromPhonebook *
+* The Input: Contact *phonebook[] *
+* The output: Asks user for details,
+ * prints whether or not the deletion was successful.
+ * Returns 0 on success, 1 on failure *
+* The Function operation: Gets input from the user,
+ * tries to delete the contact from the phonebook
+ * and prints whether or not it succeeded *
+*************************************************************************/
 int deleteContactFromPhonebook(Contact *phonebook[]);
 
+/************************************************************************
+* function name: findContactByNum *
+* The Input: Contact *phonebook[], int size *
+* The output: Asks the user for phone number
+ * and prints the matching contact and returns status code 0 if found
+ * prints an error message and return status code 1 else wise*
+* The Function operation: Gets input from the user,
+ * scans for the matching contact and prints it when found*
+*************************************************************************/
 int findContactByNum(Contact *phonebook[], int size);
 
+/************************************************************************
+* function name: findContactByName *
+* The Input: Contact *phonebook[] *
+* The output: Asks the user for details,
+ * prints the contact and return a pointer to it if found
+ * prints an error message and return a null ptr else wise *
+* The Function operation: Gets details from the user,
+ * scans the phonebook for a match and checks if such contact exists *
+*************************************************************************/
 Contact *findContactByName(Contact *phonebook[]);
 
+/************************************************************************
+* function name: updatePhoneNum *
+* The Input: Contact *phonebook[], int size *
+* The output: Asks the user for details, asks the user for a new phone number
+ * return 0 when the update was successful, 1 otherwise *
+* The Function operation: Asks the user for details,
+ * looks for the matching contact,
+ * prints the contact's details and asks the user for a new number.
+ * Than proceeds to update the contact.  *
+*************************************************************************/
 int updatePhoneNum(Contact *phonebook[], int size);
 
+/************************************************************************
+* function name: printPhonebook *
+* The Input: Contact *phonebook[], int size *
+* The output: Prints the phonebook in alphabetical order
+ * and by order contacts were added *
+* The Function operation: Loops over the given phonebook and its matching size
+ * and print the phonebook in alphabetical order
+ * and by order contacts were added *
+*************************************************************************/
 void printPhonebook(Contact *phonebook[], int size);
 
 void printMenu() {
@@ -42,17 +117,19 @@ void printMenu() {
     printf("7. Exit.\n");
 }
 
-void teardown(Contact *phonebook[]) {
+void tearDown(Contact *phonebook[]) {
     for (int i = 0; i < ALPHABET_LENGTH; ++i) {
         if (phonebook[i] != NULL) {
             while (phonebook[i] != NULL) {
                 free(phonebook[i]->firstName);
                 free(phonebook[i]->lastName);
                 free(phonebook[i]->phoneNum);
+
                 phonebook[i]->firstName = NULL;
                 phonebook[i]->lastName = NULL;
                 phonebook[i]->phoneNum = NULL;
-                Contact * toDelete = phonebook[i];
+
+                Contact *toDelete = phonebook[i];
                 phonebook[i] = phonebook[i]->next;
                 free(toDelete);
                 toDelete = NULL;
@@ -152,7 +229,8 @@ int addContactToPhonebook(Contact *phonebook[], int size) {
     }
 
     // If there is already a contact in the matching list,
-    // allocate memory for the new contact which is the next one after the last
+    // allocate memory for the new contact,
+    // which is the next one after the last
     lastContactInMatchingList->next = (Contact *) malloc(sizeof(Contact));
     lastContactInMatchingList->next->firstName = (char *) malloc(SIZE);
     lastContactInMatchingList->next->lastName = (char *) malloc(SIZE);
@@ -219,11 +297,11 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
 
             // User entered yes. Proceed to delete:
 
-            // The node we wish to delete is the head (first in the list)
             if (prevContact == currentContact) {
+            // The node we wish to delete is the head (first in the list)
 
-                // The node we wish to delete is the only node in the list
                 if (currentContact->next == NULL) {
+                    // The node we wish to delete is the only node in the list
 
                     // Free the space for the contact we want to delete
                     free(currentContact->firstName);
@@ -232,7 +310,8 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
                     free(currentContact->next);
 
                     // Set the contact to a nullptr
-                    // (to avoid pointing at garbage values - "dangling pointers")
+                    // to avoid pointing at garbage values
+                    // ("dangling pointers")
                     currentContact->firstName = NULL;
                     currentContact->lastName = NULL;
                     currentContact->phoneNum = NULL;
@@ -246,17 +325,17 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
                     phonebook[firstLetterLastNameIndex] = currentContact;
                 } else {
 
-                    // The node we wish to delete is the head (first in the list)
+                    // The node we wish to delete is the head
+                    // (first in the list)
                     // and it is not the only contact in the list
                     currentContact = currentContact->next;
                     free(prevContact);
                     prevContact = NULL;
                     phonebook[firstLetterLastNameIndex] = currentContact;
                 }
-            }
-
+            } else if (currentContact->next == NULL) {
                 // The node we wish to delete is a leaf (last in the list)
-            else if (currentContact->next == NULL) {
+
                 free(currentContact->firstName);
                 free(currentContact->lastName);
                 free(currentContact->phoneNum);
@@ -272,8 +351,8 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
                 prevContact->next = NULL;
             }
 
-                // middle:
             else {
+                // middle:
                 prevContact->next = currentContact->next;
                 free(currentContact);
                 currentContact = NULL;
@@ -282,7 +361,6 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
             printf("The contact has been deleted successfully!\n");
             return 0;
         }
-
         prevContact = currentContact;
         currentContact = currentContact->next;
     }
@@ -448,7 +526,7 @@ int main() {
                     break;
                 case EXIT:
                     printf("Bye!");
-                    teardown(phonebook);
+                    tearDown(phonebook);
                     exit(0);
                 default:
                     printf("Wrong option, try again:\n");
