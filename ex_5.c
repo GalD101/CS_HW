@@ -7,123 +7,28 @@
 #define letterIndex(a) (a - 'A')
 
 typedef struct Contact {
-    char* firstName;
-    char* lastName;
-    char* phoneNum;
-    struct Contact* next;
+    char *firstName;
+    char *lastName;
+    char *phoneNum;
+    struct Contact *next;
 } Contact;
 
 
-void setup(Contact* phonebook[]);
-int addContactToPhonebook(Contact* phonebook[], int size);
-int deleteContactFromPhonebook(Contact* phonebook[]);
 void printMenu();
-void printPhonebook(Contact* phonebook[], int size);
-int findContactByNum(Contact* phonebook[], int size);
-Contact* findContactByName(Contact* phonebook[], int size);
-int updatePhoneNum(Contact* phonebook[], int size);
 
-void setup (Contact* phonebook[]) {
+void teardown(Contact *phonebook[]);
 
-    // TODO: Check if this is necessary
-    // Initialize phone book and allocate memory
-    for (int i = 0; i < ALPHABET_LENGTH; ++i) {
-        phonebook[i] = (Contact*)malloc(sizeof(Contact*));
-        phonebook[i]->firstName = (char*)malloc(sizeof(phonebook[i]->firstName));
-        phonebook[i]->lastName = (char*)malloc(sizeof(phonebook[i]->lastName));
-        phonebook[i]->phoneNum = (char*)malloc(sizeof(phonebook[i]->phoneNum));
-        phonebook[i]->next = (Contact*)malloc(sizeof(phonebook[i]->next));
+int addContactToPhonebook(Contact *phonebook[], int size);
 
-        if (phonebook[i] == NULL ||
-            phonebook[i]->firstName == NULL ||
-            phonebook[i]->lastName == NULL ||
-            phonebook[i]->phoneNum == NULL ||
-            phonebook[i]->next     == NULL) {
-            printf("ERROR\n");
-            exit(1);
-        }
-        phonebook[i]->firstName = NULL;
-        phonebook[i]->lastName  = NULL;
-        phonebook[i]->phoneNum  = NULL;
-        phonebook[i]->next      = NULL;
-    }
-}
+int deleteContactFromPhonebook(Contact *phonebook[]);
 
-void teardown(Contact* phonebook[]) {
-    for (int i = 0; i < ALPHABET_LENGTH; ++i) {
-        free(phonebook[i]->firstName);
-        free(phonebook[i]->lastName);
-        free(phonebook[i]->phoneNum);
-        free(phonebook[i]->next);
-    }
-}
+int findContactByNum(Contact *phonebook[], int size);
 
+Contact *findContactByName(Contact *phonebook[]);
 
-// TODO: use another function for search for delete and searchbyname NOPE
-int deleteContactFromPhonebook(Contact* phonebook[]) {
-    printf("Enter a contact name (<first name> <last name>): ");
-    char firstName[SIZE];
-    char lastName[SIZE];
-    scanf("%s %s", firstName, lastName);
+int updatePhoneNum(Contact *phonebook[], int size);
 
-    int firstLetterLastNameIndex = letterIndex(lastName[0]);
-    Contact * currentContact = phonebook[firstLetterLastNameIndex];
-    Contact * prevContact = phonebook[firstLetterLastNameIndex];
-
-    while (currentContact->firstName != NULL) {
-        if ((strcmp(currentContact->firstName, firstName) == 0) &&
-            (strcmp(currentContact->lastName, lastName) == 0)) {
-
-            // Found contact to delete
-            printf("\nAre you sure? (y/n) ");
-            char confirm;
-            while(getchar() != '\n') {
-                getchar();
-            }
-            scanf("%c", &confirm);
-            if (confirm != 'y' && confirm != 'Y') {
-                printf("The deletion of the contact has been canceled.\n");
-                return -1;
-            }
-
-            // If the node is the head (the first item in the list)
-            if (prevContact == currentContact) {
-
-                // If the node is the only node in the list
-                if (currentContact->next == NULL) {
-                    currentContact->firstName = NULL;
-                    currentContact->lastName = NULL;
-                    currentContact->phoneNum = NULL;
-                    currentContact->next = NULL;
-                    printf("The contact has been deleted successfully!\n");
-                    return 0;
-                }
-                currentContact = currentContact->next;
-                printf("The contact has been deleted successfully!\n");
-                return 0;
-            }
-
-            // leaf
-            if (currentContact->next == NULL) {
-                prevContact->next = NULL;
-                printf("The contact has been deleted successfully!\n");
-                return 0;
-            }
-
-            // else, middle:
-            Contact * temp = currentContact->next;
-            free(prevContact->next);
-            prevContact->next = temp;
-            return 0;
-        }
-        prevContact = currentContact;
-        if (currentContact->next == NULL) {
-            break;
-        }
-        currentContact = currentContact->next;
-    }
-    printf("The deletion of the contact has failed!\n");
-}
+void printPhonebook(Contact *phonebook[], int size);
 
 void printMenu() {
     printf("Welcome to the phone book manager!\n");
@@ -137,38 +42,26 @@ void printMenu() {
     printf("7. Exit.\n");
 }
 
-void printPhonebook(Contact* phonebook[], int size) {
-    for (int i = 0; i < size; ++i) {
-        Contact currentContact = *phonebook[i];
-        Contact anotherOne = *phonebook[i];
-        if (currentContact.firstName == NULL) {
-
-            // current list is Empty, continue to the next one
-            continue;
-        }
-
-        int numOfContacts = 0;
-        do {
-            ++numOfContacts;
-            if (currentContact.next == NULL) {
-                break;
+void teardown(Contact *phonebook[]) {
+    for (int i = 0; i < ALPHABET_LENGTH; ++i) {
+        if (phonebook[i] != NULL) {
+            while (phonebook[i] != NULL) {
+                free(phonebook[i]->firstName);
+                free(phonebook[i]->lastName);
+                free(phonebook[i]->phoneNum);
+                phonebook[i]->firstName = NULL;
+                phonebook[i]->lastName = NULL;
+                phonebook[i]->phoneNum = NULL;
+                Contact * toDelete = phonebook[i];
+                phonebook[i] = phonebook[i]->next;
+                free(toDelete);
+                toDelete = NULL;
             }
-            currentContact = *currentContact.next;
-        } while (currentContact.firstName != NULL);
-
-
-        for (int f = 0; f < numOfContacts; ++f) {
-            for (int k = 1; k < numOfContacts - f; ++k) {
-                anotherOne = *anotherOne.next;
-            }
-            printf("%-10s %-10s %-10s\n",
-                   anotherOne.firstName, anotherOne.lastName, anotherOne.phoneNum);
-            anotherOne = *phonebook[i];
         }
     }
 }
 
-int addContactToPhonebook(Contact* phonebook[], int size) {
+int addContactToPhonebook(Contact *phonebook[], int size) {
 
     // Get contact details from user
     printf("Enter a contact details "
@@ -178,20 +71,31 @@ int addContactToPhonebook(Contact* phonebook[], int size) {
     char phoneNum[SIZE];
     scanf("%s %s %s", firstName, lastName, phoneNum);
 
+    // Get the list's index in which the new contact should be added
+    int indexByLastName = letterIndex(lastName[0]);
+    Contact *lastContactInMatchingList = phonebook[indexByLastName];
 
+    // Iterate over the phone book and check for existing name/number
     for (int i = 0; i < size; ++i) {
-        Contact * currentList = phonebook[i];
+        Contact *currentList = phonebook[i];
 
-        // If name is NULL than I assume the whole struct is empty
-        while (currentList->firstName != NULL) {
+        // loop until we reach the last item in the current list
+        // also check if the contact details aren't already in the list
+        while (currentList != NULL) {
 
             // Check if there is an existing contact with the same name
-            if (strcmp(currentList->firstName, firstName) == 0
-                && strcmp(currentList->lastName, lastName) == 0) {
-                printf("The addition of the contact has failed, "
-                       "since the contact %s %s already exists!\n", firstName,
-                       lastName);
-                return 2;
+            if (i == indexByLastName) {
+                if (strcmp(currentList->firstName, firstName) == 0
+                    && strcmp(currentList->lastName, lastName) == 0) {
+                    printf("The addition of the contact has failed, "
+                           "since the contact %s %s already exists!\n",
+                           firstName,
+                           lastName);
+                    return 2;
+                }
+
+                // Save this pointer to use later if details are valid
+                lastContactInMatchingList = currentList;
             }
 
             // Check if there is an existing contact with the same phone number
@@ -201,90 +105,202 @@ int addContactToPhonebook(Contact* phonebook[], int size) {
                 return 3;
             }
 
-            // break from the loop when reacheing the last Contact
-            if (currentList->next == NULL) {
-                break;
-            }
-
             // Move the pointer to the next Contact in the current list
             currentList = currentList->next;
-        }
-
+        } // end of while loop
     }
 
-    int indexByLastName = letterIndex(lastName[0]);
-    Contact * matchingLastNamelist = phonebook[indexByLastName];
+    // Details are valid, append the new Contact to the phonebook
 
-    // If name is NULL than I assume the whole struct is empty
-    // If this is NULL, that means this is the first Contact
-    // in the matching list
-    if (matchingLastNamelist->firstName == NULL) {
+    // If we have no contacts in the matching list yet
+    if (lastContactInMatchingList == NULL) {
 
-        // allocate memory for the new contact
-        matchingLastNamelist->firstName = (char*) malloc(SIZE);
-        matchingLastNamelist->lastName = (char*) malloc(SIZE);
-        matchingLastNamelist->phoneNum = (char*) malloc(SIZE);
+        // Allocate memory for the new contact
+        lastContactInMatchingList = (Contact *) malloc(sizeof(Contact));
+        lastContactInMatchingList->firstName = (char *) malloc(SIZE);
+        lastContactInMatchingList->lastName = (char *) malloc(SIZE);
+        lastContactInMatchingList->phoneNum = (char *) malloc(SIZE);
 
         // If there was an error while allocating memory
-        if (matchingLastNamelist->firstName == NULL ||
-            matchingLastNamelist->lastName  == NULL ||
-            matchingLastNamelist->phoneNum  == NULL) {
+        if (lastContactInMatchingList->firstName == NULL ||
+            lastContactInMatchingList->lastName == NULL ||
+            lastContactInMatchingList->phoneNum == NULL) {
             printf("The addition of the contact has failed!\n");
+
+            // Free all memory we tried to allocate
+            free(lastContactInMatchingList->firstName);
+            free(lastContactInMatchingList->lastName);
+            free(lastContactInMatchingList->phoneNum);
+            free(lastContactInMatchingList);
+
+            // Set the pointers to NULL (to avoid pointing at garbage values)
+            lastContactInMatchingList->firstName = NULL;
+            lastContactInMatchingList->lastName = NULL;
+            lastContactInMatchingList->phoneNum = NULL;
+            lastContactInMatchingList = NULL;
             return 1;
         }
 
-        // Copy the values from the user into the new allocated memory
-        strcpy(matchingLastNamelist->firstName, firstName);
-        strcpy(matchingLastNamelist->lastName, lastName);
-        strcpy(matchingLastNamelist->phoneNum, phoneNum);
-        matchingLastNamelist->next = NULL;
+        // Copy the values from the user's input into the new allocated memory
+        strcpy(lastContactInMatchingList->firstName, firstName);
+        strcpy(lastContactInMatchingList->lastName, lastName);
+        strcpy(lastContactInMatchingList->phoneNum, phoneNum);
+        lastContactInMatchingList->next = NULL;
+        phonebook[indexByLastName] = lastContactInMatchingList;
         printf("The contact has been added successfully!\n");
         return 0;
     }
 
-    Contact * loopIndex = matchingLastNamelist;
-
-    // Traverse the list up until the last element
-    while (loopIndex->firstName != NULL) {
-        if (loopIndex->next == NULL) {
-            break;
-        }
-        loopIndex = loopIndex->next;
-    }
-
-    // allocate memory for the new contact
-    loopIndex->next = (Contact*) malloc(sizeof(Contact));
-    loopIndex->next->firstName = (char*) malloc(SIZE);
-    loopIndex->next->lastName = (char*) malloc(SIZE);
-    loopIndex->next->phoneNum = (char*) malloc(SIZE);
+    // If there is already a contact in the matching list,
+    // allocate memory for the new contact which is the next one after the last
+    lastContactInMatchingList->next = (Contact *) malloc(sizeof(Contact));
+    lastContactInMatchingList->next->firstName = (char *) malloc(SIZE);
+    lastContactInMatchingList->next->lastName = (char *) malloc(SIZE);
+    lastContactInMatchingList->next->phoneNum = (char *) malloc(SIZE);
 
     // If there was an error while allocating memory
-    if (loopIndex->next == NULL ||
-        loopIndex->next->firstName == NULL ||
-        loopIndex->next->lastName  == NULL ||
-        loopIndex->next->phoneNum  == NULL) {
+    if (lastContactInMatchingList->next == NULL ||
+        lastContactInMatchingList->next->firstName == NULL ||
+        lastContactInMatchingList->next->lastName == NULL ||
+        lastContactInMatchingList->next->phoneNum == NULL) {
         printf("The addition of the contact has failed!\n");
+
+        // Free all memory we tried to allocate
+        free(lastContactInMatchingList->next->firstName);
+        free(lastContactInMatchingList->next->lastName);
+        free(lastContactInMatchingList->next->phoneNum);
+        free(lastContactInMatchingList->next);
+
+        // Set the pointers to NULL
+        // (to avoid pointing at garbage values - "dangling pointers")
+        lastContactInMatchingList->next->firstName = NULL;
+        lastContactInMatchingList->next->lastName = NULL;
+        lastContactInMatchingList->next->phoneNum = NULL;
+        lastContactInMatchingList->next = NULL;
         return 1;
     }
 
-    // Copy the values from the user into the new allocated memory
-    strcpy(loopIndex->next->firstName, firstName);
-    strcpy(loopIndex->next->lastName, lastName);
-    strcpy(loopIndex->next->phoneNum, phoneNum);
-    loopIndex->next->next = NULL;
+    // Copy the values from the user's input into the new allocated memory
+    strcpy(lastContactInMatchingList->next->firstName, firstName);
+    strcpy(lastContactInMatchingList->next->lastName, lastName);
+    strcpy(lastContactInMatchingList->next->phoneNum, phoneNum);
+    lastContactInMatchingList->next->next = NULL;
     printf("The contact has been added successfully!\n");
     return 0;
 }
 
-int findContactByNum(Contact* phonebook[], int size) {
+int deleteContactFromPhonebook(Contact *phonebook[]) {
+    printf("Enter a contact name (<first name> <last name>): ");
+    char firstName[SIZE];
+    char lastName[SIZE];
+    scanf("%s %s", firstName, lastName);
+
+    int firstLetterLastNameIndex = letterIndex(lastName[0]);
+    Contact *currentContact = phonebook[firstLetterLastNameIndex];
+    Contact *prevContact = phonebook[firstLetterLastNameIndex];
+
+    // Traverse the matching list and look for a match
+    while (currentContact != NULL) {
+        if ((strcmp(currentContact->firstName, firstName) == 0) &&
+            (strcmp(currentContact->lastName, lastName) == 0)) {
+
+            // Found contact to delete
+            printf("\nAre you sure? (y/n) ");
+            char confirm;
+            while (getchar() != '\n') {
+                getchar();
+            }
+
+            scanf("%c", &confirm);
+            if (confirm != 'y' && confirm != 'Y') {
+                printf("The deletion of the contact has been canceled.\n");
+                return -1;
+            }
+
+            // User entered yes. Proceed to delete:
+
+            // The node we wish to delete is the head (first in the list)
+            if (prevContact == currentContact) {
+
+                // The node we wish to delete is the only node in the list
+                if (currentContact->next == NULL) {
+
+                    // Free the space for the contact we want to delete
+                    free(currentContact->firstName);
+                    free(currentContact->lastName);
+                    free(currentContact->phoneNum);
+                    free(currentContact->next);
+
+                    // Set the contact to a nullptr
+                    // (to avoid pointing at garbage values - "dangling pointers")
+                    currentContact->firstName = NULL;
+                    currentContact->lastName = NULL;
+                    currentContact->phoneNum = NULL;
+                    currentContact->next = NULL;
+
+                    free(currentContact);
+                    currentContact = NULL;
+
+                    // Initialize the array ptr
+                    // since this was the only item in the list
+                    phonebook[firstLetterLastNameIndex] = currentContact;
+                } else {
+
+                    // The node we wish to delete is the head (first in the list)
+                    // and it is not the only contact in the list
+                    currentContact = currentContact->next;
+                    free(prevContact);
+                    prevContact = NULL;
+                    phonebook[firstLetterLastNameIndex] = currentContact;
+                }
+            }
+
+                // The node we wish to delete is a leaf (last in the list)
+            else if (currentContact->next == NULL) {
+                free(currentContact->firstName);
+                free(currentContact->lastName);
+                free(currentContact->phoneNum);
+
+                currentContact->firstName = NULL;
+                currentContact->lastName = NULL;
+                currentContact->phoneNum = NULL;
+                currentContact->next = NULL;
+
+                free(currentContact);
+                currentContact = NULL;
+
+                prevContact->next = NULL;
+            }
+
+                // middle:
+            else {
+                prevContact->next = currentContact->next;
+                free(currentContact);
+                currentContact = NULL;
+            }
+
+            printf("The contact has been deleted successfully!\n");
+            return 0;
+        }
+
+        prevContact = currentContact;
+        currentContact = currentContact->next;
+    }
+
+    printf("The deletion of the contact has failed!\n");
+    return 1;
+}
+
+int findContactByNum(Contact *phonebook[], int size) {
     printf("Enter a phone number: ");
     char phoneNum[SIZE];
     scanf("%s", phoneNum);
 
     // scan for phone number in each entry
     for (int i = 0; i < size; ++i) {
-        Contact* currentEntry = phonebook[i];
-        while (currentEntry->firstName != NULL) {
+        Contact *currentEntry = phonebook[i];
+
+        while (currentEntry != NULL) {
             if (strcmp(currentEntry->phoneNum, phoneNum) == 0) {
                 printf("The following contact was found: %s %s %s\n",
                        currentEntry->firstName,
@@ -292,27 +308,24 @@ int findContactByNum(Contact* phonebook[], int size) {
                        currentEntry->phoneNum);
                 return 0;
             }
-            if (currentEntry->next == NULL) {
-                break;
-            }
             currentEntry = currentEntry->next;
         }
     }
     printf("No contact with a phone number "
-           "%s was found in the phone book\n",phoneNum);
+           "%s was found in the phone book\n", phoneNum);
     return 1;
 }
 
-Contact* findContactByName(Contact* phonebook[], int size) {
+Contact *findContactByName(Contact *phonebook[]) {
     printf("Enter a contact name (<first name> <last name>): ");
     char firstName[SIZE], lastName[SIZE];
     scanf("%s %s", firstName, lastName);
 
     int IndexByLastName = letterIndex(lastName[0]);
-    Contact * matchingLastNamelist = phonebook[IndexByLastName];
+    Contact *matchingLastNamelist = phonebook[IndexByLastName];
 
     // Look for the Contact in the matching list
-    while (matchingLastNamelist->firstName != NULL) {
+    while (matchingLastNamelist != NULL) {
         if (strcmp(matchingLastNamelist->firstName, firstName) == 0 &&
             strcmp(matchingLastNamelist->lastName, lastName) == 0) {
             printf("The following contact was found: %s %s %s\n",
@@ -321,10 +334,6 @@ Contact* findContactByName(Contact* phonebook[], int size) {
                    matchingLastNamelist->phoneNum);
             return matchingLastNamelist;
         }
-
-        if (matchingLastNamelist->next == NULL) {
-            break;
-        }
         matchingLastNamelist = matchingLastNamelist->next;
     }
     printf("No contact with a name %s %s was found in the phone book\n",
@@ -332,8 +341,8 @@ Contact* findContactByName(Contact* phonebook[], int size) {
     return NULL;
 }
 
-int updatePhoneNum(Contact* phonebook[], int size) {
-    Contact* contactToUpdate = findContactByName(phonebook, size);
+int updatePhoneNum(Contact *phonebook[], int size) {
+    Contact *contactToUpdate = findContactByName(phonebook);
     if (contactToUpdate == NULL) {
 
         // The contact doesn't exist, abort;
@@ -346,31 +355,53 @@ int updatePhoneNum(Contact* phonebook[], int size) {
 
     // Check if the number already exists
     for (int i = 0; i < size; ++i) {
-        Contact * currentList = phonebook[i];
+        Contact *currentList = phonebook[i];
 
-        // If name is NULL than I assume the whole struct is empty
-        while (currentList->firstName != NULL) {
+        while (currentList != NULL) {
 
             // Check if there is an existing contact with the same phone number
             if (strcmp(currentList->phoneNum, newPhoneNum) == 0) {
                 printf("The update of the contact has failed, "
-                       "since the phone number %s already exists!\n", newPhoneNum);
+                       "since the phone number %s already exists!\n",
+                       newPhoneNum);
                 return 3;
-            }
-
-            // break from the loop when reacheing the last Contact
-            if (currentList->next == NULL) {
-                break;
             }
 
             // Move the pointer to the next Contact in the current list
             currentList = currentList->next;
         }
-
     }
     strcpy(contactToUpdate->phoneNum, newPhoneNum);
     printf("The contact has been updated successfully!\n");
     return 0;
+}
+
+void printPhonebook(Contact *phonebook[], int size) {
+    for (int i = 0; i < size; ++i) {
+        Contact *currentContact = phonebook[i];
+        Contact *objToPrint = phonebook[i];
+        if (currentContact == NULL) {
+
+            // current list is Empty, continue to the next one
+            continue;
+        }
+
+        int numOfContacts = 0;
+        do {
+            ++numOfContacts;
+            currentContact = currentContact->next;
+        } while (currentContact != NULL);
+
+        for (int f = 0; f < numOfContacts; ++f) {
+            for (int k = 1; k < numOfContacts - f; ++k) {
+                objToPrint = objToPrint->next;
+            }
+            printf("%-10s %-10s %-10s\n",
+                   objToPrint->firstName, objToPrint->lastName, objToPrint
+                           ->phoneNum);
+            objToPrint = phonebook[i];
+        }
+    }
 }
 
 enum Options {
@@ -384,8 +415,7 @@ enum Options {
 };
 
 int main() {
-    Contact* phonebook[ALPHABET_LENGTH];
-    setup(phonebook);
+    Contact *phonebook[ALPHABET_LENGTH] = {NULL};
     printMenu();
     while (1) {
         int choice;
@@ -405,7 +435,7 @@ int main() {
                     printMenu();
                     break;
                 case FIND_BY_NAME:
-                    findContactByName(phonebook, ALPHABET_LENGTH);
+                    findContactByName(phonebook);
                     printMenu();
                     break;
                 case UPDATE:
@@ -420,13 +450,11 @@ int main() {
                     printf("Bye!");
                     teardown(phonebook);
                     exit(0);
-                    break;
                 default:
                     printf("Wrong option, try again:\n");
                     break;
             }
-        }
-        else {
+        } else {
             printf("Wrong option, try again:\n");
             continue;
         }
