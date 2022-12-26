@@ -332,6 +332,7 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
                     free(prevContact->firstName);
                     free(prevContact->lastName);
                     free(prevContact->phoneNum);
+
                     prevContact->firstName = NULL;
                     prevContact->lastName = NULL;
                     prevContact->phoneNum = NULL;
@@ -360,7 +361,13 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
             else {
                 // middle:
                 prevContact->next = currentContact->next;
+                free(currentContact->firstName);
+                free(currentContact->lastName);
+                free(currentContact->phoneNum);
                 free(currentContact);
+                currentContact->firstName = NULL;
+                currentContact->lastName = NULL;
+                currentContact->phoneNum = NULL;
                 currentContact = NULL;
             }
 
