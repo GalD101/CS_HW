@@ -329,6 +329,12 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
                     // (first in the list)
                     // and it is not the only contact in the list
                     currentContact = currentContact->next;
+                    free(prevContact->firstName);
+                    free(prevContact->lastName);
+                    free(prevContact->phoneNum);
+                    prevContact->firstName = NULL;
+                    prevContact->lastName = NULL;
+                    prevContact->phoneNum = NULL;
                     free(prevContact);
                     prevContact = NULL;
                     phonebook[firstLetterLastNameIndex] = currentContact;
