@@ -291,6 +291,8 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
             char confirm;
 
             scanf("%c", &confirm);
+
+            // Check for whitespace
             while (confirm == ' '  || confirm == '\t' || confirm == '\n' ||
                    confirm == '\v' || confirm == '\f' || confirm == '\r') {
                 confirm = getchar();
