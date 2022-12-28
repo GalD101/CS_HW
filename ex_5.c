@@ -287,7 +287,7 @@ int deleteContactFromPhonebook(Contact *phonebook[]) {
             (strcmp(currentContact->lastName, lastName)   == 0)) {
 
             // Found contact to delete
-            printf("\nAre you sure? (y/n) ");
+            printf("Are you sure? (y/n) ");
             char confirm;
 
             scanf("%c", &confirm);
@@ -551,7 +551,7 @@ int main() {
                     tearDown(phonebook);
                     exit(0);
                 default:
-                    printf("Wrong option, try again:\n");
+                    printf("Wrong option, try again:");
                     break;
             }
         }
