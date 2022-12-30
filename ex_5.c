@@ -1,7 +1,7 @@
 /******************************************
 *Student name: Gal Dali
 *Student ID: 322558297
-*Exercise name: ex4
+*Exercise name: ex5
 ******************************************/
 
 #include <stdio.h>
