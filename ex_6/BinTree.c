@@ -22,7 +22,7 @@ void preorder(BinTree *child) {
     if (child == NULL) {
         return;
     }
-    printChildDetails(child);
+    child->task(child->action);
     preorder(child->left);
     preorder(child->right);
 }
