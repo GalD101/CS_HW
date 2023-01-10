@@ -57,7 +57,6 @@ void deleteNodes(BinTree *root) {
     freeNode(root);
 }
 
-
 void printChildDetails(BinTree *child) {
     printf("id: %d, name: %s, gender: %c, age: %d\n",
            child->id, child->name, child->gender, child->age);
@@ -77,16 +76,16 @@ void preorderPrintDetails(BinTree *root) {
         return;
     }
     printChildDetails(root);
-    preorderDetails(root->left);
-    preorderDetails(root->right);
+    preorderPrintDetails(root->left);
+    preorderPrintDetails(root->right);
 }
 
 void postorderPrintDetails(BinTree *root) {
     if (root == NULL) {
         return;
     }
-    postorderDetails(root->left);
-    postorderDetails(root->right);
+    postorderPrintDetails(root->left);
+    postorderPrintDetails(root->right);
     printChildDetails(root);
 }
 
@@ -240,7 +239,7 @@ BinTree **deleteMen(BinTree **root) {
     return root;
 }
 
-void lookformoshe(BinTree *root) {
+void lookForMoshe(BinTree *root) {
     BinTree *moshe = findMoshe(root);
     if (moshe != NULL) {
         if (moshe->age >= 80) {
@@ -270,8 +269,9 @@ void printAllChildren(BinTree *root) {
     if (order == -1) {
         return;
     }
-    void (*orderFunction[])(BinTree *) = {preorderDetails, inorderDetails,
-                                          postorderDetails};
+    void (*orderFunction[])(BinTree *) = {preorderPrintDetails,
+                                          inorderPrintDetails,
+                                          postorderPrintDetails};
     generic_function(root, (void *) (orderFunction[order - 1]));
 }
 
@@ -280,7 +280,8 @@ int doTask(BinTree *root) {
     if (order == -1) {
         return 1;
     }
-    void (*orderFunction[])(BinTree *) = {preorder, inorder, postorder};
+    void
+    (*orderFunction[])(BinTree *) = {preorderTask, inorderTask, postorderTask};
     generic_function(root, (void *) (orderFunction[order - 1]));
 
     return 0;

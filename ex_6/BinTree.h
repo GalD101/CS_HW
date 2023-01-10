@@ -1,5 +1,5 @@
 #ifndef BIN_TREE
-#define BINTREE
+#define BIN_TREE
 
 typedef struct BinTree {
     int id;
@@ -20,10 +20,6 @@ void deleteNodes(BinTree *root);
 void freeIsrael(BinTree *root);
 BinTree *addChild(BinTree *root, int id,
                   const char *name, int age, char gender);
-void printChildDetails(BinTree *child);
-void inorderPrintDetails(BinTree *root);
-void preorderPrintDetails(BinTree *root);
-void postorderPrintDetails(BinTree *root);
 
 void inorderTask(BinTree *child);
 void preorderTask(BinTree *child);
@@ -41,7 +37,7 @@ BinTree *findMoshe(BinTree *root);
 int findMen(BinTree *root);
 int findDead(BinTree *root);
 void incrementAge(BinTree *root);
-void lookformoshe(BinTree *root);
+void lookForMoshe(BinTree *root);
 void fuckMoshe(BinTree **root);
 int doTask(BinTree *root);
 void printAllChildren(BinTree *root);
@@ -58,12 +54,9 @@ int generic_int_function(BinTree* root, int(*task)(void*));
 void child_task(void* val);
 void moshe_task(void* val);
 
-void inorder(BinTree *child);
-void preorder(BinTree *child);
-void postorder(BinTree *child);
-void inorderDetails(BinTree *child);
-void preorderDetails(BinTree *child);
-void postorderDetails(BinTree *child);
+void inorderPrintDetails(BinTree *child);
+void preorderPrintDetails(BinTree *child);
+void postorderPrintDetails(BinTree *child);
 
 
 void printChildDetails(BinTree *child);

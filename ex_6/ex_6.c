@@ -8,7 +8,7 @@ int main() {
     int fuckthis = 1;
     while (1) {
         generic_function(root, (void *) (incrementAge));
-        generic_function(root, (void *) lookformoshe);
+        generic_function(root, (void *) lookForMoshe);
         if (fuckthis) {
             fuckthis = 0;
         } else {
